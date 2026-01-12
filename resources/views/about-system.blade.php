@@ -185,7 +185,7 @@
                 <li><strong>Framework:</strong> Laravel (PHP)</li>
                 <li><strong>Database:</strong> MySQL</li>
                 <li><strong>Frontend:</strong> HTML, CSS, JS, Bootstrap 5</li>
-                <li><strong>Hosting:</strong> Secure tunnel (Ngrok)</li>
+                <li><strong>Hosting:</strong> Render</li>
             </ul>
         </div>
     </div>
@@ -198,7 +198,7 @@
         </button>
         <div class="accordion-content">
             <ul>
-                <li><strong>Version:</strong> 1.0</li>
+                <li><strong>Version:</strong> 1.2</li>
                 <li><strong>Release:</strong> December 2025</li>
                 <li><strong>Last Updated:</strong> January 2026</li>
             </ul>
