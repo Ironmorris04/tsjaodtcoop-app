@@ -1,0 +1,24 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-1baQpBpU.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/css/hero.css": {
+    "file": "assets/hero-DdY0uCA4.css",
+    "src": "resources/css/hero.css",
+    "isEntry": true,
+    "names": [
+      "hero.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CXDpL9bK.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}

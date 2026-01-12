@@ -1,0 +1,429 @@
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 30px;
+        border-radius: 10px 10px 0 0;
+        margin: -16px -16px 20px -16px;
+    }
+
+    .profile-photo-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .profile-photo {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-photo-placeholder {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 5px solid white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-photo-placeholder i {
+        font-size: 60px;
+        color: white;
+    }
+
+    .profile-name {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 15px 0 5px 0;
+    }
+
+    .profile-role {
+        color: #64748b;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .info-section {
+        margin-bottom: 30px;
+    }
+
+    .info-section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .info-section-title i {
+        color: #4e73df;
+        font-size: 20px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-size: 15px;
+        color: #1e293b;
+        font-weight: 500;
+    }
+
+    .badge-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 15px;
+    }
+
+    .info-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .info-badge.yes {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .info-badge.no {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .ids-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .ids-table th {
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #cbd5e1;
+    }
+
+    .ids-table td {
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 14px;
+        color: #1e293b;
+    }
+
+    .ids-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .ids-table tr:hover {
+        background: #f8fafc;
+    }
+
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-badge.valid {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-badge.expired {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .status-badge.expiring {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .no-ids-message {
+        text-align: center;
+        padding: 40px 20px;
+        color: #64748b;
+    }
+
+    .no-ids-message i {
+        font-size: 48px;
+        margin-bottom: 15px;
+        color: #cbd5e1;
+    }
+
+    /* ID Photo Styles */
+    .id-photo {
+        width: 80px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 2px solid #e2e8f0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .id-photo:hover {
+        border-color: #4e73df;
+        box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+        transform: scale(1.05);
+    }
+
+    .id-photo-placeholder {
+        width: 80px;
+        height: 60px;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        border-radius: 6px;
+        border: 2px dashed #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+    }
+
+    .id-photo-placeholder i {
+        font-size: 24px;
+    }
+</style>
+
+<!-- Full-Screen ID Photo Viewer -->
+<div id="fullscreenPhotoViewer" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.95); z-index: 9999; cursor: zoom-out;">
+    <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 24px; font-weight: 600; text-shadow: 0 2px 10px rgba(0,0,0,0.8); z-index: 10000;">
+        <i class="fas fa-id-card"></i> <span id="fullscreenPhotoTitle"></span>
+    </div>
+    <button onclick="closeFullscreenPhoto()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; font-size: 24px; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; z-index: 10000; transition: all 0.3s ease; backdrop-filter: blur(10px);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='rotate(90deg)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='rotate(0deg)'">
+        <i class="fas fa-times"></i>
+    </button>
+    <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 14px; opacity: 0.8; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
+        <i class="fas fa-info-circle"></i> Click anywhere or press ESC to close
+    </div>
+    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 80px 40px 60px 40px;">
+        <img id="fullscreenPhotoImage" src="" alt="ID Photo" style="max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 10px 50px rgba(0,0,0,0.8); border-radius: 8px;" onclick="event.stopPropagation();">
+    </div>
+</div>
+
+<style>
+    #fullscreenPhotoViewer {
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    #fullscreenPhotoImage {
+        animation: zoomIn 0.3s ease;
+    }
+
+    @keyframes zoomIn {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+</style>
+
+<script>
+function showIdPhotoModal(imageUrl, idType) {
+    const viewer = document.getElementById('fullscreenPhotoViewer');
+    const image = document.getElementById('fullscreenPhotoImage');
+    const title = document.getElementById('fullscreenPhotoTitle');
+
+    image.src = imageUrl;
+    title.textContent = idType;
+    viewer.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeFullscreenPhoto() {
+    const viewer = document.getElementById('fullscreenPhotoViewer');
+    viewer.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Close on click anywhere in the viewer
+document.addEventListener('DOMContentLoaded', function() {
+    const viewer = document.getElementById('fullscreenPhotoViewer');
+    if (viewer) {
+        viewer.addEventListener('click', closeFullscreenPhoto);
+    }
+});
+
+// Close on ESC key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeFullscreenPhoto();
+    }
+});
+</script>
+
+
+<div class="profile-header">
+    <div class="profile-photo-container">
+                    <img src="http://localhost/transport-coop-system/public/storage/profiles/LvJtdDY9haUsDZrs3u3AZT35Jv7MbkCMnqHLizst.png" alt="Profile Photo" class="profile-photo">
+            </div>
+    <div style="text-align: center;">
+        <h3 class="profile-name">Kim Patrick Sotto Pogi</h3>
+        <p class="profile-role">Operator</p>
+    </div>
+</div>
+
+<!-- Personal Information -->
+<div class="info-section">
+    <h4 class="info-section-title">
+        <i class="fas fa-user-circle"></i>
+        Personal Information
+    </h4>
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="info-label">Full Name</span>
+            <span class="info-value">Kim Patrick Sotto Pogi</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Age</span>
+            <span class="info-value">28 years old</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Gender</span>
+            <span class="info-value">Male</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Contact Number</span>
+            <span class="info-value">09537087221</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Email Address</span>
+            <span class="info-value">sangranokim@gmail.com</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Address</span>
+            <span class="info-value">sfdgdfgghfdfg</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Birthdate</span>
+            <span class="info-value">June 19, 1997</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Birthplace</span>
+            <span class="info-value">Carigara</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Civil Status</span>
+            <span class="info-value">Single</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Citizenship</span>
+            <span class="info-value">Filipino</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Religion</span>
+            <span class="info-value">N/A</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Occupation</span>
+            <span class="info-value">Driver</span>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Information -->
+<div class="info-section">
+    <h4 class="info-section-title">
+        <i class="fas fa-info-circle"></i>
+        Additional Information
+    </h4>
+    <div class="badge-group">
+        <span class="info-badge yes">
+            <i class="fas fa-check-circle"></i>
+            Indigenous People: Yes
+        </span>
+        <span class="info-badge no">
+            <i class="fas fa-times-circle"></i>
+            Person with Disability: No
+        </span>
+        <span class="info-badge no">
+            <i class="fas fa-times-circle"></i>
+            Senior Citizen: No
+        </span>
+        <span class="info-badge yes">
+            <i class="fas fa-check-circle"></i>
+            4Ps Member: Yes
+        </span>
+    </div>
+</div>
+
+<!-- Operator ID -->
+<div class="info-section">
+    <h4 class="info-section-title">
+        <i class="fas fa-id-card"></i>
+        Identification Document
+    </h4>
+
+            <table class="ids-table">
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>ID Type</th>
+                    <th>ID Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                                                    <img src="http://localhost/transport-coop-system/public/storage/ids/nESN2XMbks3AXToSs44uUvANvcQDUAKmMjlq5yfa.png" alt="TIN ID" class="id-photo" onclick="showIdPhotoModal('http://localhost/transport-coop-system/public/storage/ids/nESN2XMbks3AXToSs44uUvANvcQDUAKmMjlq5yfa.png', 'TIN ID')">
+                                            </td>
+                    <td><strong>TIN ID</strong></td>
+                    <td>a31113114</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>

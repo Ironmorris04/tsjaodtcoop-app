@@ -1,0 +1,45 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Listen for Xdebug",
+            "type": "php",
+            "request": "launch",
+            "port": 9003,
+            "pathMappings": {
+                "/var/www/html": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "Launch Built-in PHP Server",
+            "type": "php",
+            "request": "launch",
+            "runtimeArgs": [
+                "-S",
+                "localhost:8000",
+                "-t",
+                "public"
+            ],
+            "port": 9003,
+            "serverReadyAction": {
+                "action": "openExternally"
+            }
+        },
+        {
+            "name": "Laravel Artisan Serve",
+            "type": "php",
+            "request": "launch",
+            "program": "${workspaceFolder}/artisan",
+            "args": [
+                "serve"
+            ],
+            "cwd": "${workspaceFolder}",
+            "port": 9003,
+            "serverReadyAction": {
+                "pattern": "Server running on \\[http://(.*)\\]",
+                "uriFormat": "http://%s",
+                "action": "openExternally"
+            }
+        }
+    ]
+}

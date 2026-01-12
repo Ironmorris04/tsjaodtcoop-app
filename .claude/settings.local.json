@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan:*)",
+      "Bash(cat:*)",
+      "Bash(php update_penalty.php:*)",
+      "Bash(del:*)",
+      "Bash(php show_tables.php:*)",
+      "Bash(test:*)",
+      "Bash(php -l:*)",
+      "Bash(php:*)",
+      "Bash(curl:*)",
+      "Bash(composer dump-autoload:*)",
+      "Bash(find:*)",
+      "Bash(dir:*)",
+      "Bash(/c/laragon/bin/composer/composer.bat dump-autoload)",
+      "Bash(public/storage/test.txt)",
+      "Bash(routes_output.json)",
+      "Bash(storage/logs/laravel.log)",
+      "Bash(chmod:*)",
+      "Bash(findstr:*)",
+      "Bash(nul)",
+      "Bash(git checkout:*)",
+      "Bash(mysql:*)",
+      "Bash(ls:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

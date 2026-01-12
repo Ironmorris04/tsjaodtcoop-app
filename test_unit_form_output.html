@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="NeAz3Otmdkw0t53k0tc3AAUeBGMsYog6TmR2MVci">
+    <title>Add Transport Unit - Transport Coop System</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="http://localhost/transport-coop-system/public/images/tsjaodt-logo.png">
+    <link rel="shortcut icon" type="image/png" href="http://localhost/transport-coop-system/public/images/tsjaodt-logo.png">
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css">
+    
+    <!-- Custom Retractable Sidebar Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: #f4f6f9;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Retractable Sidebar Styles */
+        .sidebar {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            color: #334155;
+            width: 70px;
+            transition: width 0.3s ease;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 1000;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.08);
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #224abe 0%, #1a3a8a 100%);
+        }
+
+        .sidebar.expanded {
+            width: 250px;
+        }
+
+        .sidebar.pinned {
+            width: 250px;
+        }
+
+        .brand-link {
+            padding: 18px 20px;
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            white-space: nowrap;
+            border-bottom: none;
+            box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+        }
+
+        .brand-link:hover {
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand-link i {
+            font-size: 24px;
+            min-width: 30px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .brand-text {
+            margin-left: 10px;
+            font-size: 17px;
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar.expanded .brand-text,
+        .sidebar.pinned .brand-text {
+            opacity: 1;
+        }
+
+        .user-panel {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .user-panel i {
+            font-size: 35px;
+            min-width: 30px;
+            color: #4e73df;
+            filter: drop-shadow(0 2px 4px rgba(78, 115, 223, 0.2));
+        }
+
+        .user-info-sidebar {
+            margin-left: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.expanded .user-info-sidebar,
+        .sidebar.pinned .user-info-sidebar {
+            opacity: 1;
+        }
+
+        .user-info-sidebar a {
+            color: #1e293b;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-info-sidebar a:hover {
+            color: #4e73df;
+        }
+
+        .user-info-sidebar small {
+            color: #64748b;
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .nav-sidebar {
+            list-style: none;
+            padding: 12px 0;
+        }
+
+        .nav-item {
+            position: relative;
+            margin: 2px 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #475569;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            border-left: 3px solid transparent;
+            border-radius: 8px;
+            margin: 2px 0;
+        }
+
+        .nav-link:hover {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #4e73df;
+            border-left-color: #4e73df;
+            text-decoration: none;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            border-left-color: transparent;
+            color: white;
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.35);
+        }
+
+        .nav-link.active:hover {
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .nav-link.active .nav-icon {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .nav-link p {
+            margin: 0;
+            margin-left: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .sidebar.expanded .nav-link p,
+        .sidebar.pinned .nav-link p {
+            opacity: 1;
+        }
+
+        /* Dropdown Menu Styles */
+        .nav-item.has-dropdown {
+            position: relative;
+        }
+
+        .nav-link.dropdown-toggle {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-link.dropdown-toggle .dropdown-arrow {
+            margin-left: auto;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            font-size: 12px;
+        }
+
+        .sidebar.expanded .nav-link.dropdown-toggle .dropdown-arrow,
+        .sidebar.pinned .nav-link.dropdown-toggle .dropdown-arrow {
+            opacity: 1;
+        }
+
+        /* Open dropdown on hover when sidebar is expanded or pinned */
+        .sidebar.expanded .nav-item.has-dropdown:hover .dropdown-arrow,
+        .sidebar.pinned .nav-item.has-dropdown:hover .dropdown-arrow,
+        .nav-item.has-dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu-sidebar {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 0 0 8px 8px;
+            margin: 0 4px;
+        }
+
+        /* Open dropdown on hover when sidebar is expanded or pinned */
+        .sidebar.expanded .nav-item.has-dropdown:hover .dropdown-menu-sidebar,
+        .sidebar.pinned .nav-item.has-dropdown:hover .dropdown-menu-sidebar {
+            max-height: 500px;
+        }
+
+        /* Keep dropdown open if a child is active and sidebar is expanded/pinned */
+        .sidebar.expanded .nav-item.has-dropdown.open .dropdown-menu-sidebar,
+        .sidebar.pinned .nav-item.has-dropdown.open .dropdown-menu-sidebar {
+            max-height: 500px;
+        }
+
+        .dropdown-menu-sidebar .nav-link {
+            padding-left: 50px;
+            font-size: 13px;
+            border-radius: 6px;
+            margin: 2px 8px;
+        }
+
+        .dropdown-menu-sidebar .nav-link:hover {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        }
+
+        .dropdown-menu-sidebar .nav-link.active {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+        }
+
+        /* Keep parent highlighted when child is active */
+        .nav-item.has-dropdown .dropdown-menu-sidebar .nav-link.active ~ .dropdown-toggle,
+        .nav-item.has-dropdown:has(.dropdown-menu-sidebar .nav-link.active) > .nav-link.dropdown-toggle {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: #4e73df;
+            border-left-color: #4e73df;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 70px;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.expanded ~ .main-content,
+        .sidebar.pinned ~ .main-content {
+            margin-left: 250px;
+        }
+
+        /* Top Navbar */
+        .main-header {
+            background: white;
+            padding: 0 30px;
+            height: 60px;
+            min-height: 60px;
+            max-height: 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-nav.navbar-right {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .navbar-nav.navbar-right .nav-item {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin: 0;
+            position: relative;
+        }
+
+        .navbar-nav.navbar-right .nav-item.dropdown {
+            position: relative;
+        }
+
+        .user-dropdown-toggle {
+            color: #495057;
+            text-decoration: none;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 8px;
+            background: transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .user-dropdown-toggle:hover {
+            color: #4e73df;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            text-decoration: none;
+        }
+
+        .user-dropdown-toggle .fa-user {
+            font-size: 16px;
+        }
+
+        .user-dropdown-toggle .user-name {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .user-dropdown-toggle .dropdown-caret {
+            font-size: 10px;
+            transition: transform 0.2s ease;
+            color: #94a3b8;
+        }
+
+        .nav-item.dropdown:hover .user-dropdown-toggle .dropdown-caret {
+            transform: rotate(180deg);
+        }
+
+        .navbar-nav.navbar-right .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            left: auto;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            min-width: 200px;
+            display: block;
+            z-index: 9999;
+            padding: 8px 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+            pointer-events: none;
+        }
+
+        .navbar-nav.navbar-right .nav-item.dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            color: #475569;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            gap: 10px;
+        }
+
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #4e73df;
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover i {
+            color: #4e73df;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 8px 12px;
+        }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .content-header h1 {
+            font-size: 24px;
+            color: #343a40;
+            margin: 0;
+        }
+
+        .breadcrumb {
+            list-style: none;
+            display: flex;
+            gap: 5px;
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        .close:hover {
+            opacity: 1;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 280px !important;
+                position: fixed;
+                left: -280px;
+                z-index: 1050;
+                transition: left 0.3s ease, box-shadow 0.3s ease, width 0s;
+                height: 100vh;
+                top: 0;
+                overflow-y: auto;
+                overflow-x: visible;
+                background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+                box-shadow: none;
+            }
+
+            .sidebar.expanded,
+            .sidebar.pinned {
+                left: 0;
+                box-shadow: 4px 0 25px rgba(78, 115, 223, 0.15);
+            }
+
+            /* Force sidebar to show all content on mobile */
+            .sidebar .brand-text,
+            .sidebar .user-info-sidebar,
+            .sidebar .nav-text,
+            .sidebar .nav-link p {
+                opacity: 1 !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+
+            /* Mobile overlay */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(30, 41, 59, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 1040;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+
+            .d-none.d-sm-inline-block {
+                display: none !important;
+            }
+
+            /* Mobile nav items spacing */
+            .nav-item {
+                margin: 4px 10px;
+            }
+
+            .nav-link {
+                padding: 14px 16px;
+            }
+        }
+
+        /* Global Modal Styles - Scrollable Body Only */
+        .modal-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Custom scrollbar for modal body */
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+            margin: 5px 0;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #4e73df;
+            border-radius: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #224abe;
+        }
+
+        .modal-footer {
+            flex-shrink: 0;
+        }
+
+        .modal-header {
+            flex-shrink: 0;
+        }
+    </style>
+
+    </head>
+<body>
+<!-- Mobile Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="dashboard-container">
+
+    <!-- Retractable Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Brand Logo -->
+        <a href="http://localhost/transport-coop-system/public/dashboard" class="brand-link">
+            <i class="fas fa-bus"></i>
+            <span class="brand-text">Transport Coop</span>
+        </a>
+
+        <!-- User Panel -->
+        <div class="user-panel">
+            <i class="fas fa-user-circle"></i>
+            <div class="user-info-sidebar">
+                <a href="#" class="d-block">John Operator</a>
+                <small>Operator</small>
+            </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <nav>
+            <ul class="nav-sidebar">
+                <li class="nav-item">
+                    <a href="http://localhost/transport-coop-system/public/dashboard" class="nav-link ">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+
+                
+                                <li class="nav-item">
+                    <a href="http://localhost/transport-coop-system/public/drivers" class="nav-link ">
+                        <i class="nav-icon fas fa-id-card"></i>
+                        <p>Drivers</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="http://localhost/transport-coop-system/public/units" class="nav-link ">
+                        <i class="nav-icon fas fa-bus"></i>
+                        <p>Transport Units</p>
+                    </a>
+                </li>
+                <li class="nav-item has-dropdown ">
+                    <a class="nav-link dropdown-toggle ">
+                        <i class="nav-icon fas fa-book"></i>
+                        <p>Financial Books</p>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu-sidebar">
+                        <a href="http://localhost/transport-coop-system/public/operator/cash-receipts-journal" class="nav-link ">
+                            <i class="nav-icon fas fa-receipt"></i>
+                            <p>Cash Receipts Journal</p>
+                        </a>
+                        <a href="http://localhost/transport-coop-system/public/operator/cash-disbursement-book" class="nav-link ">
+                            <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                            <p>Cash Disbursement Book</p>
+                        </a>
+                        <a href="http://localhost/transport-coop-system/public/operator/cash-book" class="nav-link ">
+                            <i class="nav-icon fas fa-book-open"></i>
+                            <p>Cash Book</p>
+                        </a>
+                    </div>
+                </li>
+                
+                
+                
+                
+                <li class="nav-item">
+                    <a href="http://localhost/transport-coop-system/public/logout" class="nav-link"
+                       onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>Logout</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <form id="logout-form-sidebar" action="http://localhost/transport-coop-system/public/logout" method="POST" style="display: none;">
+            <input type="hidden" name="_token" value="NeAz3Otmdkw0t53k0tc3AAUeBGMsYog6TmR2MVci" autocomplete="off">        </form>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Navbar -->
+        <nav class="main-header">
+            <div class="header-left">
+                <!-- Page title or breadcrumb can go here if needed -->
+            </div>
+
+            <ul class="navbar-nav navbar-right">
+                <li class="nav-item dropdown">
+                    <a href="#" class="user-dropdown-toggle">
+                        <i class="far fa-user"></i>
+                        <span class="user-name">John Operator</span>
+                        <i class="fas fa-chevron-down dropdown-caret"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                                                    <a href="#" class="dropdown-item" data-toggle="modal" data-target="#operatorProfileModal">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                                                <div class="dropdown-divider"></div>
+                        <form method="POST" action="http://localhost/transport-coop-system/public/logout">
+                            <input type="hidden" name="_token" value="NeAz3Otmdkw0t53k0tc3AAUeBGMsYog6TmR2MVci" autocomplete="off">                            <button type="submit" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <!-- Content Header -->
+            <div class="content-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h1>Add New Transport Unit</h1>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="http://localhost/transport-coop-system/public/dashboard">Home</a></li>
+<li class="breadcrumb-item"><a href="http://localhost/transport-coop-system/public/units">Transport Units</a></li>
+<li class="breadcrumb-item active">Create</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <section class="content">
+                
+                
+                <style>
+.form-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.form-header-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.form-header h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.form-header p {
+    opacity: 0.9;
+    margin: 0;
+}
+
+.form-body {
+    padding: 2rem;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #667eea;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title i {
+    font-size: 1.25rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-group label .text-danger {
+    color: #f44336;
+}
+
+.form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    outline: none;
+}
+
+.form-control.is-invalid {
+    border-color: #f44336;
+}
+
+.invalid-feedback {
+    color: #f44336;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.form-actions {
+    padding: 1.5rem 2rem;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.btn-custom {
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.btn-secondary-custom {
+    background: #e0e0e0;
+    color: #666;
+}
+
+.btn-secondary-custom:hover {
+    background: #d0d0d0;
+    color: #333;
+}
+
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-custom {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="form-card">
+            <div class="form-header">
+                <div class="form-header-icon">
+                    <i class="fas fa-bus"></i>
+                </div>
+                <h2>Add New Transport Unit</h2>
+                <p>Fill in the vehicle's information below</p>
+            </div>
+
+            <form action="http://localhost/transport-coop-system/public/units" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="_token" value="NeAz3Otmdkw0t53k0tc3AAUeBGMsYog6TmR2MVci" autocomplete="off">
+                <div class="form-body">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            Basic Information
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="plate_no">Plate Number <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control "
+                                           id="plate_no" name="plate_no" value=""
+                                           placeholder="ABC 1234" required>
+                                                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="type">Vehicle Type <span class="text-danger">*</span></label>
+                                    <select class="form-control " id="type" name="type" required>
+                                        <option value="">Select Type</option>
+                                        <option value="bus" >Bus</option>
+                                        <option value="jeepney" >Jeepney</option>
+                                        <option value="van" >Van</option>
+                                        <option value="taxi" >Taxi</option>
+                                    </select>
+                                                                    </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="unit_photo">Unit Photo</label>
+                                    <input type="file" class="form-control "
+                                           id="unit_photo" name="unit_photo" accept=".png,.jpg,.jpeg" onchange="validateImageFile(this)">
+                                    <small class="form-text text-muted">Accepted formats: PNG, JPG, JPEG | Max 2MB</small>
+                                                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Details -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-car"></i>
+                            Vehicle Details
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="brand">Brand <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control "
+                                           id="brand" name="brand" value=""
+                                           placeholder="e.g., Toyota, Nissan" required>
+                                                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="model">Model <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control "
+                                           id="model" name="model" value=""
+                                           placeholder="e.g., Hiace, Coaster" required>
+                                                                    </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="year">Year <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control "
+                                           id="year" name="year" value=""
+                                           min="1900" max="2026"
+                                           placeholder="2025" required>
+                                                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="capacity">Passenger Capacity <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control "
+                                           id="capacity" name="capacity" value=""
+                                           min="1" placeholder="e.g., 15" required>
+                                                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LTO OR/CR Section -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-file-alt"></i>
+                            LTO Documents (OR & CR)
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lto_or_number">LTO OR Number</label>
+                                    <input type="text" class="form-control "
+                                           id="lto_or_number" name="lto_or_number" value=""
+                                           placeholder="Enter LTO OR Number">
+                                                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lto_cr_number">LTO CR Number</label>
+                                    <input type="text" class="form-control "
+                                           id="lto_cr_number" name="lto_cr_number" value=""
+                                           placeholder="Enter LTO CR Number">
+                                                                    </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lto_cr_validity">LTO CR Validity</label>
+                                    <input type="date" class="form-control "
+                                           id="lto_cr_validity" name="lto_cr_validity" value="">
+                                                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unit OR/CR Section -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-bus"></i>
+                            Unit Documents (OR & CR)
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="unit_or_number">Unit OR Number</label>
+                                    <input type="text" class="form-control "
+                                           id="unit_or_number" name="unit_or_number" value=""
+                                           placeholder="Enter Unit OR Number">
+                                                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="unit_cr_number">Unit CR Number</label>
+                                    <input type="text" class="form-control "
+                                           id="unit_cr_number" name="unit_cr_number" value=""
+                                           placeholder="Enter Unit CR Number">
+                                                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="http://localhost/transport-coop-system/public/units" class="btn-custom btn-secondary-custom">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn-custom btn-primary-custom">
+                        <i class="fas fa-save"></i> Add Unit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+            </section>
+        </div>
+    </div>
+</div>
+
+<!-- Operator Profile Modal -->
+<div class="modal fade" id="operatorProfileModal" tabindex="-1" role="dialog" aria-labelledby="operatorProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); color: white;">
+                <h5 class="modal-title" id="operatorProfileModalLabel">
+                    <i class="fas fa-user-circle"></i> Operator Profile
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="operatorProfileContent">
+                <div class="text-center py-5">
+                    <i class="fas fa-spinner fa-spin fa-3x text-primary"></i>
+                    <p class="mt-3">Loading profile...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Retractable Sidebar Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const menuItems = document.querySelectorAll('.nav-sidebar .nav-link');
+    let isPinned = false;
+
+    // Expand sidebar on hover
+    sidebar.addEventListener('mouseenter', function() {
+        if (!isPinned) {
+            sidebar.classList.add('expanded');
+        }
+    });
+
+    // Collapse sidebar when mouse leaves
+    sidebar.addEventListener('mouseleave', function() {
+        if (!isPinned) {
+            sidebar.classList.remove('expanded');
+        }
+    });
+
+    // Pin sidebar when clicking menu items (except logout)
+    menuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't pin on logout
+            if (this.textContent.includes('Logout')) {
+                return;
+            }
+
+            isPinned = true;
+            sidebar.classList.add('pinned');
+            sidebar.classList.remove('expanded');
+        });
+    });
+
+    // Unpin sidebar when clicking main content
+    mainContent.addEventListener('click', function() {
+        if (isPinned) {
+            isPinned = false;
+            sidebar.classList.remove('pinned');
+        }
+    });
+
+    // Prevent clicks inside sidebar from triggering mainContent click
+    sidebar.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Close sidebar when clicking overlay on mobile
+    const overlay = document.getElementById('sidebarOverlay');
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('expanded');
+            sidebar.classList.remove('pinned');
+            isPinned = false;
+            document.body.style.overflow = '';
+            overlay.classList.remove('active');
+        });
+    }
+
+    // Handle window resize to clean up states
+    window.addEventListener('resize', function() {
+        const isMobile = window.innerWidth <= 768;
+        if (!isMobile) {
+            // Clean up mobile states when switching to desktop
+            document.body.style.overflow = '';
+            const overlay = document.getElementById('sidebarOverlay');
+            if (overlay) overlay.classList.remove('active');
+        }
+    });
+});
+</script>
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- Bootstrap Bundle (includes Popper) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Operator Profile Modal Script -->
+<script>
+$(document).ready(function() {
+    // Load profile data when modal is shown
+    $('#operatorProfileModal').on('show.bs.modal', function (e) {
+        var modalContent = $('#operatorProfileContent');
+
+        // Show loading state
+        modalContent.html(`
+            <div class="text-center py-5">
+                <i class="fas fa-spinner fa-spin fa-3x text-primary"></i>
+                <p class="mt-3">Loading profile...</p>
+            </div>
+        `);
+
+        // Fetch profile data via AJAX
+        $.ajax({
+            url: 'http://localhost/transport-coop-system/public/operator/profile-view',
+            method: 'GET',
+            success: function(response) {
+                modalContent.html(response);
+            },
+            error: function(xhr, status, error) {
+                modalContent.html(`
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Error loading profile:</strong> ${error}
+                        <br>
+                        <small>Please try again or contact support if the problem persists.</small>
+                    </div>
+                `);
+            }
+        });
+    });
+});
+</script>
+
+<script>
+    // Allowed image extensions
+    const allowedImageExtensions = ['png', 'jpg', 'jpeg'];
+
+    // Validate file extension
+    function validateFileExtension(file, allowedExtensions) {
+        const fileName = file.name.toLowerCase();
+        const extension = fileName.split('.').pop();
+        return allowedExtensions.includes(extension);
+    }
+
+    // Validate image file on change
+    function validateImageFile(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+
+            // Validate file extension - only PNG, JPG, JPEG allowed
+            if (!validateFileExtension(file, allowedImageExtensions)) {
+                alert('Invalid file type. Please upload a PNG, JPG, or JPEG image only.');
+                input.value = ''; // Clear the input
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+</body>
+</html>

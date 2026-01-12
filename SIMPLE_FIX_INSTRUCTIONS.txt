@@ -1,0 +1,193 @@
+================================================================================
+  TRANSPORT COOPERATIVE SYSTEM - SIMPLE FIX
+================================================================================
+
+If the system is NOT displaying on the client's computer, follow these steps:
+
+================================================================================
+EASIEST METHOD - Use the Batch File
+================================================================================
+
+1. Open File Explorer (the folder icon on taskbar)
+
+2. Navigate to this folder:
+   C:\laragon\www\transport-coop-system
+
+3. Find this file:
+   fix_client_deployment.bat
+
+4. DOUBLE-CLICK the file
+   - A black window will open
+   - Press any key to continue
+   - Wait for it to finish (about 30 seconds)
+   - Press any key when it says "Press any key to continue"
+
+5. Open your web browser (Chrome, Firefox, or Edge)
+
+6. Type this in the address bar:
+   http://localhost/transport-coop-system/public
+
+7. Press Enter
+
+8. You should see the LOGIN PAGE!
+
+
+================================================================================
+IF THE BATCH FILE DOESN'T WORK - Manual Method
+================================================================================
+
+1. Press Windows Key + R on your keyboard
+   (The Windows key is usually between Ctrl and Alt)
+
+2. Type: cmd
+   Press Enter
+   (A black window will open - this is Command Prompt)
+
+3. Copy and paste this command (right-click to paste):
+   cd C:\laragon\www\transport-coop-system
+
+4. Press Enter
+
+5. Now copy and paste these commands ONE BY ONE:
+
+   Command 1:
+   php artisan key:generate
+   (Press Enter, wait for it to finish)
+
+   Command 2:
+   php artisan cache:clear
+   (Press Enter, wait for it to finish)
+
+   Command 3:
+   php artisan config:clear
+   (Press Enter, wait for it to finish)
+
+   Command 4:
+   php artisan view:clear
+   (Press Enter, wait for it to finish)
+
+   Command 5:
+   php artisan storage:link
+   (Press Enter, wait for it to finish)
+
+6. Close the Command Prompt window
+
+7. Open your web browser
+
+8. Type this address:
+   http://localhost/transport-coop-system/public
+
+9. Press Enter
+
+10. You should see the LOGIN PAGE!
+
+
+================================================================================
+IMPORTANT THINGS TO CHECK FIRST
+================================================================================
+
+Before running the fix, make sure:
+
+☐ Laragon is RUNNING
+  - Look at the system tray (bottom-right of screen, near the clock)
+  - Find the Laragon icon
+  - Right-click it
+  - Click "Start All"
+  - Wait until you see GREEN icons for Apache and MySQL
+
+☐ The project folder exists
+  - Open File Explorer
+  - Go to C:\laragon\www
+  - You should see a folder named "transport-coop-system"
+  - Inside it, you should see many files including "artisan"
+
+☐ The database exists
+  - Open browser
+  - Go to: http://localhost/phpmyadmin
+  - Login: username "root", password (leave blank)
+  - Look on the left side
+  - You should see a database named "transportcoop"
+  - If you don't see it, you need to import the SQL file
+
+
+================================================================================
+WHAT TO DO IF IT STILL DOESN'T WORK
+================================================================================
+
+Check these things:
+
+1. What do you see in the browser?
+   □ Blank white page
+   □ Error message (write down what it says)
+   □ "404 Not Found" page
+   □ Something else
+
+2. Is Laragon running?
+   □ Apache icon: Green or Red?
+   □ MySQL icon: Green or Red?
+
+3. Did you use the correct URL?
+   WRONG: http://localhost/transport-coop-system
+   RIGHT: http://localhost/transport-coop-system/public
+   (Notice the /public at the end - this is REQUIRED!)
+
+4. Does the database exist?
+   - Go to http://localhost/phpmyadmin
+   - Look for "transportcoop" on the left
+   - If missing, import the SQL file
+
+
+================================================================================
+COMMON MISTAKES
+================================================================================
+
+❌ WRONG: Accessing without /public
+   http://localhost/transport-coop-system
+
+✅ RIGHT: Must include /public at the end
+   http://localhost/transport-coop-system/public
+
+
+❌ WRONG: Running php artisan from any folder
+   C:\Users\Client> php artisan key:generate
+
+✅ RIGHT: Change directory first
+   C:\Users\Client> cd C:\laragon\www\transport-coop-system
+   C:\laragon\www\transport-coop-system> php artisan key:generate
+
+
+❌ WRONG: Laragon not started
+
+✅ RIGHT: Right-click Laragon → Start All (wait for green icons)
+
+
+================================================================================
+QUICK CHECKLIST
+================================================================================
+
+After running the fix, verify:
+
+☑ Laragon is running (green icons)
+☑ Opened: http://localhost/transport-coop-system/public (with /public!)
+☑ Login page appears
+☑ Can type username and password
+☑ No error messages
+
+
+================================================================================
+NEED HELP?
+================================================================================
+
+If still not working, contact support with:
+
+1. Screenshot of what you see in browser
+2. Laragon status (Apache and MySQL - green or red?)
+3. What URL you're using
+4. Any error messages you see
+
+
+================================================================================
+Created: December 22, 2025
+For: Client Deployment Issues
+Quick Fix: Run fix_client_deployment.bat
+================================================================================

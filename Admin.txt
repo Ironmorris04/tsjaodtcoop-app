@@ -1,0 +1,15 @@
+Admin
+6. (NEW) Renewed Documents throws an error renewal request not found or already processed if approve
+Ini hiya amo ini nak prob kagabi, pero upon viewing han knn operator dre ngayan na exit adto na driver(didi ak hinin na iha), idk maybe bangin gin apply any adto na renewal saka gin delete and driver 
+🤷‍♂️
+(Inin na last feel ko okay na inin, it na error is for error handling it)
+
+Operator
+1. View Membership form in Operator Profile wont fetch the scanned image form instead it want to display a PDF (ini naka base ini han gin upload han admin during han pag approve niya han approval han operator)
+
+2. Unable to update image related fields in Operator Profile (ini di ko gets where, na update mn an knn ngadto may profile)
+3. (NEW) Mobile Sidebar is Missing
+
+An ig enhance ko nla yna is an knn admin ha cash on hand ngan cash in bank para same hiya ha knn treasurer tas an knn renewed documents, feel ko ngka error hiya han knn pag test, pero ig tect ko pa lat it
+
+brb

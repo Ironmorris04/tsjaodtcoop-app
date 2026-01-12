@@ -1,0 +1,19 @@
+Admin
+1. ID Type renders N/A even available, if formatted is removed it renders raw data eg. tinid, prc, etc in  Admin/Pending Registration
+2. Multiple Alert Messages Appear in pending registration
+3. Expiring Soon in Dashboard doesn't display
+4. Missing unit Entries in Renewed Documents/only shows driver related documents
+5. Annual Report: Cluster 2 needs auto display of datas
+6. Receipt and Disbursement Book should include all columns same format with Cash Book
+
+Operator
+1. Missing password visibility icon in operators account
+2. View Membership form in Operator Account renders PDF file instead of Scanned Image form
+3. Unable to change/edit image related fields
+
+President
+1. General Assembly all operators, BOD all officers
+
+Treasurer
+1. Dashboard: Cash on hand and Cash in Back are empty
+2. Dashboard: Annual Collection Graph, change cash on hand and cash in bank into receipt and disbursement
