@@ -341,35 +341,52 @@ class OperatorController extends Controller
         $request->validate([
             'admin_password' => ['required'],
         ]);
-        
+
         $admin = Auth::user();
-        
+
         if (!Hash::check($request->admin_password, $admin->password)) {
-            return back()->withErrors([
-                'admin_password' => 'The admin password is incorrect.',
-            ]);
+            return redirect()
+                ->route('operators.index')
+                ->with('warning', 'The admin password is incorrect.');
         }
-        
+
         $operator = Operator::onlyTrashed()->findOrFail($id);
         $operatorName = $operator->business_name;
-        
-        // Permanently delete user account too if needed
+
+        /*
+        |--------------------------------------------------------------------------
+        | SAFETY CHECKS (only unpaid penalties now)
+        |--------------------------------------------------------------------------
+        */
+
+        if ($operator->total_unpaid_penalties > 0) {
+            return redirect()
+                ->route('operators.index')
+                ->with('warning', "Operator '{$operatorName}' has unpaid penalties. Cannot permanently delete.");
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | PERMANENT DELETE
+        |--------------------------------------------------------------------------
+        */
+
         if ($operator->user) {
             $operator->user->forceDelete();
         }
-        
+
         $operator->forceDelete();
-        
+
         AuditTrail::log(
             'permanently_deleted',
             "Permanently deleted operator: {$operatorName}",
             'Operator',
-            $id
+            $operator->id
         );
-        
+
         return redirect()
             ->route('operators.index')
-            ->with('success', 'Operator has been permanently deleted from the database.');
+            ->with('success', "Operator '{$operatorName}' has been permanently deleted.");
     }
 
 }
