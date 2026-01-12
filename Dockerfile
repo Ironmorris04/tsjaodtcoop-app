@@ -4,7 +4,7 @@ FROM php:8.2-cli
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Force cache invalidation - change this value when you need to rebuild from scratch
-ENV CACHE_BUST=2026-01-11-v1
+ENV CACHE_BUST=2024-01-10-v1
 
 # Install system dependencies including Ghostscript
 RUN apt-get update && apt-get install -y \
@@ -26,8 +26,8 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 # Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Allow Composer unlimited memory
-ENV COMPOSER_MEMORY_LIMIT=-1
+# Increase memory limit for Composer
+RUN echo "memory_limit = 512M" > /usr/local/etc/php/conf.d/memory.ini
 
 # Set working directory
 WORKDIR /var/www
@@ -35,8 +35,10 @@ WORKDIR /var/www
 # Copy composer files first (for better caching)
 COPY composer.json composer.lock ./
 
-# Install dependencies without memory limits
-RUN composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
+# Install dependencies with retries and prefer-dist
+RUN composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist || \
+    composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist || \
+    composer install --no-dev --optimize-autoloader --no-scripts
 
 # Copy rest of application
 COPY . .
