@@ -256,11 +256,11 @@ class Operator extends Model
             */
 
             if ($operator->membership_form_path) {
-                Storage::disk('public')->delete($operator->membership_form_path);
+                Storage::disk('s3')->delete($operator->membership_form_path);
             }
 
             if ($operator->membership_form_preview_path) {
-                Storage::disk('public')->delete($operator->membership_form_preview_path);
+                Storage::disk('s3')->delete($operator->membership_form_preview_path);
             }
 
             /*
