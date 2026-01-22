@@ -22,17 +22,21 @@ class DatabaseBackupController extends Controller
         abort_unless(Auth::user()->isAdmin(), 403);
 
         $lastBackup = BackupLog::latest()->first();
-        $recentBackups = BackupLog::latest()->take(5)->get();
+
+        $recentBackups = BackupLog::with('admin')
+            ->latest()
+            ->take(5)
+            ->get();
 
         $manualBackupsToday = BackupLog::where('admin_id', Auth::id())
             ->whereDate('created_at', today())
             ->count();
 
         return view('admin.database.index', [
-            'lastBackupAt'        => $lastBackup?->created_at?->format('Y-m-d H:i:s') ?? 'Not yet available',
-            'backupStatus'        => ucfirst($lastBackup?->status ?? 'Pending'),
-            'recentBackups'       => $recentBackups,
-            'manualBackupsToday'  => $manualBackupsToday,
+            'lastBackupAt'       => $lastBackup?->created_at?->format('Y-m-d H:i:s'),
+            'backupStatus'       => $lastBackup ? ucfirst($lastBackup->status) : 'Pending',
+            'recentBackups'      => $recentBackups,
+            'manualBackupsToday' => $manualBackupsToday,
         ]);
     }
 
@@ -43,7 +47,7 @@ class DatabaseBackupController extends Controller
     {
         abort_unless(Auth::user()->isAdmin(), 403);
 
-        // ✅ SERVER-SIDE DAILY LIMIT (critical security check)
+        // ✅ SERVER-SIDE DAILY LIMIT
         $countToday = BackupLog::where('admin_id', Auth::id())
             ->whereDate('created_at', today())
             ->count();
@@ -64,36 +68,33 @@ class DatabaseBackupController extends Controller
 
         // ✅ Create log entry immediately
         $log = BackupLog::create([
-            'filename'  => $filename . '.sql.gz', // ✅ Include correct extension
-            'status'    => 'pending',
-            'admin_id'  => Auth::id(),
-            's3_path'   => null,
+            'filename' => $filename . '.sql.gz',
+            'status'   => 'pending',
+            'admin_id' => Auth::id(),
+            's3_path'  => null,
         ]);
 
         try {
-            // ✅ Run the backup service
+            // ✅ Run backup service
             $result = $backupService->run($filename);
-            // Expected: ['s3_path' => 'db/xxx.sql.gz', 'file_size' => 12345, 'local_path' => '/path/to/file']
 
-            // ✅ Verify result structure
             if (!isset($result['s3_path']) || !isset($result['file_size'])) {
                 throw new \Exception('Invalid backup service response');
             }
 
-            // ✅ Double-check S3 upload
+            // ✅ Verify upload
             if (!Storage::disk('s3')->exists($result['s3_path'])) {
                 throw new \Exception('S3 upload verification failed');
             }
 
-            // ✅ Update log with success
+            // ✅ Mark success
             $log->update([
-                'status'     => 'success',
-                's3_path'    => $result['s3_path'],
-                'file_size'  => $result['file_size'] ?? null,
-                'notes'      => 'Uploaded to S3 successfully',
+                'status'    => 'success',
+                's3_path'   => $result['s3_path'],
+                'file_size' => $result['file_size'],
+                'notes'     => 'Uploaded to S3 successfully',
             ]);
 
-            // ✅ Generate pre-signed URL (expires in 15 minutes)
             $temporaryUrl = Storage::disk('s3')->temporaryUrl(
                 $result['s3_path'],
                 now()->addMinutes(15)
@@ -101,8 +102,8 @@ class DatabaseBackupController extends Controller
 
             Log::info('Manual backup completed successfully', [
                 'admin_id' => Auth::id(),
-                's3_path' => $result['s3_path'],
-                'file_size' => $result['file_size'],
+                's3_path'  => $result['s3_path'],
+                'size'     => $result['file_size'],
             ]);
 
             return response()->json([
@@ -118,16 +119,15 @@ class DatabaseBackupController extends Controller
             ]);
 
         } catch (\Throwable $e) {
-            // ✅ Update log with failure details
+            // ✅ Mark failure
             $log->update([
                 'status' => 'failed',
-                'notes'  => substr($e->getMessage(), 0, 500), // Truncate long errors
+                'notes'  => substr($e->getMessage(), 0, 500),
             ]);
 
             Log::error('Manual backup failed', [
                 'admin_id' => Auth::id(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error'    => $e->getMessage(),
             ]);
 
             return response()->json([
@@ -144,12 +144,10 @@ class DatabaseBackupController extends Controller
     {
         abort_unless(Auth::user()->isAdmin(), 403);
 
-        // ✅ Verify backup exists
         if (!$backup->s3_path) {
             abort(404, 'Backup file path not found in database.');
         }
 
-        // ✅ Verify file exists in S3
         if (!Storage::disk('s3')->exists($backup->s3_path)) {
             abort(404, 'Backup file not found in S3 storage.');
         }
@@ -157,10 +155,8 @@ class DatabaseBackupController extends Controller
         Log::info('Backup download initiated', [
             'admin_id' => Auth::id(),
             'backup_id' => $backup->id,
-            's3_path' => $backup->s3_path,
         ]);
 
-        // ✅ Stream download from S3
         return Storage::disk('s3')->download(
             $backup->s3_path,
             $backup->filename
@@ -189,18 +185,15 @@ class DatabaseBackupController extends Controller
         abort_unless(Auth::user()->isAdmin(), 403);
 
         try {
-            // ✅ Delete from S3 if exists
             if ($backup->s3_path && Storage::disk('s3')->exists($backup->s3_path)) {
                 Storage::disk('s3')->delete($backup->s3_path);
             }
 
-            // ✅ Delete database record
             $backup->delete();
 
             Log::info('Backup deleted', [
                 'admin_id' => Auth::id(),
                 'backup_id' => $backup->id,
-                's3_path' => $backup->s3_path,
             ]);
 
             return response()->json([
