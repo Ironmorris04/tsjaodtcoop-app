@@ -1313,209 +1313,299 @@ use Illuminate\Support\Facades\Storage;
     </div>
 </div>
 
+<!-- Updated -->
 <!-- Admin Settings Modal -->
 @if(Auth::user()->isAdmin())
-<div class="modal fade" id="adminSettingsModal" tabindex="-1" role="dialog" aria-labelledby="adminSettingsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+<div class="modal fade"
+     id="adminSettingsModal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="adminSettingsModalLabel"
+     aria-hidden="true"
+     data-backdrop="static"
+     data-keyboard="false">
+
     <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
         <div class="modal-content">
 
-            <!-- Modal Header -->
-            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <!-- MODAL HEADER -->
+            <div class="modal-header"
+                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                 <h5 class="modal-title" id="adminSettingsModalLabel">
                     <i class="fas fa-cogs"></i> Admin Settings
                 </h5>
                 <button type="button" class="modal-close-btn" data-dismiss="modal">
-                    <i class="fas fa-times" aria-hidden="true"></i>
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
 
+            <!-- MODAL BODY -->
             <div class="modal-body">
-                <div class="row">
-                    <!-- LEFT: Change Password Section -->
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-section h-100">
+
+                <!-- TAB NAVIGATION -->
+                <ul class="nav nav-tabs mb-4" id="adminSettingsTabs" role="tablist"
+                    style="background: transparent;">
+
+                    <li class="nav-item">
+                        <a class="nav-link active"
+                        id="password-tab"
+                        data-toggle="tab"
+                        href="#passwordTab"
+                        role="tab"
+                        aria-selected="true">
+                            <i class="fas fa-key"></i> Change Password
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                        id="backup-tab"
+                        data-toggle="tab"
+                        href="#backupTab"
+                        role="tab"
+                        aria-selected="false">
+                            <i class="fas fa-database"></i> Database Backups
+                        </a>
+                    </li>
+                </ul>
+
+                <style>
+                    /* active color */
+                    #adminSettingsTabs .nav-link.active {
+                        color: white !important;
+                    }
+                </style>
+
+                <!-- TAB CONTENT -->
+                <div class="tab-content">
+
+                    <!-- ================= CHANGE PASSWORD TAB ================= -->
+                    <div class="tab-pane fade show active" id="passwordTab" role="tabpanel">
+                        <div class="form-section">
+
                             <div class="section-header">
                                 <h4><i class="fas fa-key"></i> Change Password</h4>
                             </div>
 
                             <form id="adminChangePasswordForm">
-                                <div class="form-group">
-                                    <label for="admin_current_password">
-                                        <i class="fas fa-lock"></i> Current Password
-                                    </label>
-                                    <div class="password-input-wrapper">
-                                        <input type="password"
-                                            class="form-control"
-                                            id="admin_current_password"
-                                            name="current_password"
-                                            required>
-                                        <i class="fas fa-eye toggle-password-icon"
-                                        onclick="togglePasswordVisibility('admin_current_password', this)"></i>
-                                    </div>
-                                    <small class="text-danger"
-                                        id="admin_current_password_error"
-                                        style="display:none;"></small>
-                                </div>
+                                <div class="row">
 
-                                <div class="form-group">
-                                    <label for="admin_new_password">
-                                        <i class="fas fa-key"></i> New Password
-                                    </label>
-                                    <div class="password-input-wrapper">
-                                        <input type="password"
-                                            class="form-control"
-                                            id="admin_new_password"
-                                            name="new_password"
-                                            required
-                                            minlength="8">
-                                        <i class="fas fa-eye toggle-password-icon"
-                                        onclick="togglePasswordVisibility('admin_new_password', this)"></i>
-                                    </div>
+                                    <!-- LEFT COLUMN: PASSWORD FIELDS -->
+                                    <div class="col-lg-8 col-md-12">
 
-                                    <!-- Password Strength Meter -->
-                                    <div class="password-strength-meter" id="adminStrengthMeter">
-                                        <div class="strength-meter-bar">
-                                            <div class="strength-meter-fill" id="adminStrengthBar"></div>
+                                        <!-- CURRENT PASSWORD -->
+                                        <div class="form-group">
+                                            <label for="admin_current_password">
+                                                <i class="fas fa-lock"></i> Current Password
+                                            </label>
+                                            <div class="password-input-wrapper">
+                                                <input type="password"
+                                                    class="form-control"
+                                                    id="admin_current_password"
+                                                    name="current_password"
+                                                    required>
+                                                <i class="fas fa-eye toggle-password-icon"
+                                                onclick="togglePasswordVisibility('admin_current_password', this)"></i>
+                                            </div>
+                                            <small class="text-danger"
+                                                id="admin_current_password_error"
+                                                style="display:none;"></small>
                                         </div>
-                                        <div class="strength-meter-text" id="adminStrengthText"></div>
+
+                                        <!-- NEW PASSWORD -->
+                                        <div class="form-group">
+                                            <label for="admin_new_password">
+                                                <i class="fas fa-key"></i> New Password
+                                            </label>
+                                            <div class="password-input-wrapper">
+                                                <input type="password"
+                                                    class="form-control"
+                                                    id="admin_new_password"
+                                                    name="new_password"
+                                                    required
+                                                    minlength="8">
+                                                <i class="fas fa-eye toggle-password-icon"
+                                                onclick="togglePasswordVisibility('admin_new_password', this)"></i>
+                                            </div>
+
+                                            <!-- PASSWORD STRENGTH -->
+                                            <div class="password-strength-meter" id="adminStrengthMeter">
+                                                <div class="strength-meter-bar">
+                                                    <div class="strength-meter-fill" id="adminStrengthBar"></div>
+                                                </div>
+                                                <div class="strength-meter-text" id="adminStrengthText"></div>
+                                            </div>
+
+                                            <small class="text-danger"
+                                                id="admin_new_password_error"
+                                                style="display:none;"></small>
+                                        </div>
+
+                                        <!-- CONFIRM PASSWORD + BUTTON IN SAME ROW -->
+                                        <div class="form-row align-items-end">
+                                            
+                                            <!-- CONFIRM PASSWORD -->
+                                            <div class="form-group col-md-9">
+                                                <label for="admin_new_password_confirmation">
+                                                    <i class="fas fa-check-circle"></i> Confirm New Password
+                                                </label>
+                                                <div class="password-input-wrapper">
+                                                    <input type="password"
+                                                        class="form-control"
+                                                        id="admin_new_password_confirmation"
+                                                        name="new_password_confirmation"
+                                                        required>
+                                                    <i class="fas fa-eye toggle-password-icon"
+                                                    onclick="togglePasswordVisibility('admin_new_password_confirmation', this)"></i>
+                                                </div>
+                                                <small class="text-danger"
+                                                    id="admin_password_match_error"
+                                                    style="display:none;">
+                                                    Passwords do not match
+                                                </small>
+                                            </div>
+
+                                            <!-- BUTTON -->
+                                            <div class="form-group col-md-3 text-right">
+                                                <button type="button"
+                                                        class="btn btn-warning w-100"
+                                                        onclick="changePassword(this, 'admin')">
+                                                    <i class="fas fa-save"></i> Change Password
+                                                </button>
+                                            </div>
+                                        </div>
+
                                     </div>
 
-                                    <small class="text-danger"
-                                        id="admin_new_password_error"
-                                        style="display:none;"></small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="admin_new_password_confirmation">
-                                        <i class="fas fa-check-circle"></i> Confirm New Password
-                                    </label>
-                                    <div class="password-input-wrapper">
-                                        <input type="password"
-                                            class="form-control"
-                                            id="admin_new_password_confirmation"
-                                            name="new_password_confirmation"
-                                            required>
-                                        <i class="fas fa-eye toggle-password-icon"
-                                        onclick="togglePasswordVisibility('admin_new_password_confirmation', this)"></i>
+                                    <!-- RIGHT COLUMN: PASSWORD REQUIREMENTS -->
+                                    <div class="col-lg-4 col-md-12">
+                                        <div class="password-requirements">
+                                            <strong>
+                                                <i class="fas fa-shield-alt"></i> Password Requirements:
+                                            </strong>
+                                            <ul>
+                                                <li id="admin-req-length">At least 8 characters long</li>
+                                                <li id="admin-req-uppercase">At least one uppercase letter</li>
+                                                <li id="admin-req-lowercase">At least one lowercase letter</li>
+                                                <li id="admin-req-number">At least one number</li>
+                                                <li id="admin-req-special">At least one special character</li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                    <small class="text-danger"
-                                        id="admin_password_match_error"
-                                        style="display:none;">
-                                        Passwords do not match
-                                    </small>
-                                </div>
 
-                                <!-- Password Requirements -->
-                                <div class="password-requirements">
-                                    <strong><i class="fas fa-shield-alt"></i> Password Requirements:</strong>
-                                    <ul>
-                                        <li id="admin-req-length">At least 8 characters long</li>
-                                        <li id="admin-req-uppercase">At least one uppercase letter</li>
-                                        <li id="admin-req-lowercase">At least one lowercase letter</li>
-                                        <li id="admin-req-number">At least one number</li>
-                                        <li id="admin-req-special">At least one special character</li>
-                                    </ul>
-                                </div>
-
-                                <!-- ONLY action inside the form -->
-                                <div class="form-actions text-right">
-                                    <button type="button"
-                                            class="btn btn-warning"
-                                            onclick="changePassword(this, 'admin')">
-                                        <i class="fas fa-save"></i> Change Password
-                                    </button>
                                 </div>
                             </form>
                         </div>
                     </div>
 
-                    <!-- RIGHT: Automatic Database Backups -->
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-section h-100">
-                            <div class="section-header">
-                                <h4><i class="fas fa-shield-alt"></i> Database Backups</h4>
-                            </div>
+                    <!-- ================= DATABASE BACKUP TAB ================= -->
+<div class="tab-pane fade" id="backupTab" role="tabpanel">
 
-                            <p class="text-muted">
-                                Database backups are handled automatically by the system.
-                            </p>
+    <div class="form-section">
 
-                            <div class="alert alert-success">
-                                <i class="fas fa-check-circle"></i>
-                                <strong>Automatic Backups Enabled</strong>
-                            </div>
+        <!-- HEADER WITH BUTTON -->
+        <div class="section-header d-flex justify-content-between align-items-center">
+            <h4>
+                <i class="fas fa-shield-alt"></i> Database Backups
+            </h4>
 
-                            <ul class="list-unstyled small">
-                                <li>
-                                    <i class="fas fa-clock text-primary"></i>
-                                    <strong>Schedule:</strong> Daily (automated)
-                                </li>
-                                <li class="mt-2">
-                                    <i class="fas fa-database text-primary"></i>
-                                    <strong>Scope:</strong> All database tables
-                                </li>
-                                <li class="mt-2">
-                                    <i class="fas fa-lock text-primary"></i>
-                                    <strong>Access:</strong> Server-side only
-                                </li>
-                                <li class="mt-2">
-                                    <i class="fas fa-calendar-alt text-primary"></i>
-                                    <strong>Last Backup:</strong>
-                                    <em id="lastBackupAt">{{ $lastBackupAt ?? 'Not yet available' }}</em>
-                                </li>
-                                <li class="mt-2">
-                                    <i class="fas fa-info-circle text-primary"></i>
-                                    <strong>Status:</strong>
-                                    <em id="backupStatus">{{ $backupStatus ?? 'Pending' }}</em>
-                                </li>
+            <button class="btn btn-primary"
+                    id="runManualBackupBtn"
+                    onclick="runManualBackup(this)">
+                <i class="fas fa-play-circle"></i> Run Manual Backup
+            </button>
+        </div>
 
-                                <!-- Recent Backups -->
-                                <li class="mt-3">
-                                    <i class="fas fa-history text-primary"></i>
-                                    <strong>Recent Backups:</strong>
-                                    <ul id="recentBackups" class="list-unstyled small mt-2">
-                                        @foreach($recentBackups ?? [] as $backup)
-                                            <li>
-                                                <em>{{ $backup->created_at->format('Y-m-d H:i:s') }}</em>
-                                                - <strong>{{ ucfirst($backup->status) }}</strong>
-                                                @if($backup->admin)
-                                                    (by {{ $backup->admin->name }})
-                                                @else
-                                                    (automatic)
-                                                @endif
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-                            </ul>
+        <p class="text-muted">
+            Database backups are handled manually and automatically by the system.
+        </p>
 
-                            <button 
-                                class="btn btn-primary mt-3 w-100"
-                                id="runManualBackupBtn"
-                                onclick="runManualBackup(this)">
-                                <i class="fas fa-play-circle"></i> Run Manual Backup
-                            </button>
+        <div class="row">
 
-                            <small class="text-muted d-block mt-3">
-                                <i class="fas fa-info-circle"></i>
-                                Backup and restore operations are intentionally restricted to prevent accidental data loss.
-                            </small>
-                        </div>
-                    </div>
+            <!-- LEFT COLUMN: Backup Details -->
+            <div class="col-lg-8 col-md-12">
 
-                    <!-- MODAL FOOTER -->
-                    <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-secondary"
-                                data-dismiss="modal">
-                            <i class="fas fa-times"></i> Close
-                        </button>
-                    </div>
+                <ul class="list-unstyled small">
+                    <li>
+                        <i class="fas fa-clock text-primary"></i>
+                        <strong>Schedule:</strong> Daily (automated)
+                    </li>
+                    <li class="mt-2">
+                        <i class="fas fa-database text-primary"></i>
+                        <strong>Scope:</strong> All database tables
+                    </li>
+                    <li class="mt-2">
+                        <i class="fas fa-lock text-primary"></i>
+                        <strong>Access:</strong> Server-side only
+                    </li>
+                    <li class="mt-2">
+                        <i class="fas fa-calendar-alt text-primary"></i>
+                        <strong>Last Backup:</strong>
+                        <em id="lastBackupAt">{{ $lastBackupAt ?? 'Not yet available' }}</em>
+                    </li>
+                    <li class="mt-2">
+                        <i class="fas fa-info-circle text-primary"></i>
+                        <strong>Status:</strong>
+                        <em id="backupStatus">{{ $backupStatus ?? 'Pending' }}</em>
+                    </li>
+                </ul>
+
+            </div>
+
+            <!-- RIGHT COLUMN: RECENT BACKUPS -->
+            <div class="col-lg-4 col-md-12">
+
+                <div class="recent-backups">
+                    <i class="fas fa-history text-primary"></i>
+                    <strong>Recent Backups:</strong>
+
+                    <ul id="recentBackups" class="list-unstyled small mt-2">
+                        @foreach($recentBackups ?? [] as $backup)
+                            <li>
+                                <em>{{ $backup->created_at->format('Y-m-d H:i:s') }}</em>
+                                - <strong>{{ ucfirst($backup->status) }}</strong>
+                                @if($backup->admin)
+                                    (by {{ $backup->admin->name }})
+                                @else
+                                    (automatic)
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+        <small class="text-muted d-block mt-3">
+            <i class="fas fa-info-circle"></i>
+            Restore operations are intentionally restricted to prevent accidental data loss.
+        </small>
+
+    </div>
+</div>
+
+
+
+
+                </div>
+            </div>
+
+            <!-- MODAL FOOTER -->
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
 
         </div>
     </div>
 </div>
 @endif
+<!-- Updated End -->
 
 <!-- Operator Profile Modal -->
 @if(Auth::user()->isOperator())
@@ -1640,70 +1730,82 @@ use Illuminate\Support\Facades\Storage;
 // Limit configuration
 const MANUAL_BACKUP_LIMIT = 3; // Max manual backups per day
 
-// Passed from server-side via Blade
-let manualBackupsToday = parseInt('{{ $manualBackupsToday ?? 0 }}');
+//--- Updated ---
+// ✅ SAFE server-side value injection (prevents NaN bugs)
+    let manualBackupsToday = Number('{{ $manualBackupsToday ?? 0 }}') || 0;
 
-function runManualBackup(button) {
-    if (manualBackupsToday >= MANUAL_BACKUP_LIMIT) {
-        alert('You have reached the daily manual backup limit.');
+    function runManualBackup(button) {
+        if (manualBackupsToday >= MANUAL_BACKUP_LIMIT) {
+            alert('You have reached the daily manual backup limit.');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-ban"></i> Daily Limit Reached';
+            return;
+        }
+
         button.disabled = true;
-        button.innerHTML = '<i class="fas fa-ban"></i> Daily Limit Reached';
-        return;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
+
+        fetch('{{ route("admin.database.run") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                storage: 's3'
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-play-circle"></i> Run Manual Backup';
+
+            // Use server time where possible, fallback to client time
+            const formatted = res.created_at
+                ? res.created_at
+                : new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+            if (res.success) {
+                // ✅ Update header info
+                document.getElementById('lastBackupAt').textContent = formatted;
+                document.getElementById('backupStatus').textContent = 'Success';
+
+                // ✅ Prepend to recent backups
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <em>${formatted}</em> -
+                    <strong>Success</strong> (manual)
+                `;
+
+                const recentList = document.getElementById('recentBackups');
+                if (recentList) {
+                    recentList.prepend(li);
+                }
+
+                alert(res.message || 'Backup uploaded to S3 successfully.');
+
+                // ✅ Increment local counter
+                manualBackupsToday++;
+
+                if (manualBackupsToday >= MANUAL_BACKUP_LIMIT) {
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-ban"></i> Daily Limit Reached';
+                }
+            } else {
+                document.getElementById('backupStatus').textContent = 'Failed';
+                alert('Backup failed: ' + (res.message || 'Unknown error'));
+            }
+        })
+        .catch(err => {
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-play-circle"></i> Run Manual Backup';
+            document.getElementById('backupStatus').textContent = 'Error';
+            alert('Error: ' + err.message);
+        });
     }
 
-    button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
-
-    fetch('{{ route("admin.database.run") }}', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            storage: 's3' // backend decides what to do with this
-        })
-    })
-    .then(res => res.json())
-    .then(res => {
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-play-circle"></i> Run Manual Backup';
-
-        const now = new Date();
-        const formatted = now.toISOString().replace('T', ' ').substring(0, 19);
-
-        if (res.success) {
-            document.getElementById('lastBackupAt').textContent = formatted;
-            document.getElementById('backupStatus').textContent = 'Success';
-
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <em>${formatted}</em> - 
-                <strong>Success</strong> (manual, S3)
-            `;
-            document.getElementById('recentBackups').prepend(li);
-
-            alert(res.message || 'Backup uploaded to S3 successfully.');
-
-            manualBackupsToday++;
-            if (manualBackupsToday >= MANUAL_BACKUP_LIMIT) {
-                button.disabled = true;
-                button.innerHTML = '<i class="fas fa-ban"></i> Daily Limit Reached';
-            }
-        } else {
-            document.getElementById('backupStatus').textContent = 'Failed';
-            alert('Backup failed: ' + (res.message || 'Unknown error'));
-        }
-    })
-    .catch(err => {
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-play-circle"></i> Run Manual Backup';
-        document.getElementById('backupStatus').textContent = 'Error';
-        alert('Error: ' + err.message);
-    });
-}
-
+//--- Updated End ---
 
 /* ===============================
    MODAL OPENERS
