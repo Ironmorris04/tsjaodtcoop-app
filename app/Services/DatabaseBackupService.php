@@ -39,13 +39,13 @@ class DatabaseBackupService
         try {
             // 1. Create SQL dump
             $command = sprintf(
-                '"%s" --protocol=TCP --host={$config['host']} --port=%d --user=%s --password=%s %s > "%s" 2>&1',
+                '"%s" --protocol=TCP --host=%s --port=%d --user=%s --password=%s %s > "%s" 2>&1',
                 $mysqldump,
                 $config['host'],
                 $config['port'],
-                escapeshellarg($config['username']),
-                escapeshellarg($config['password']),
-                escapeshellarg($config['database']),
+                $config['username'],
+                $config['password'],
+                $config['database'],
                 $sqlPath
             );
 
