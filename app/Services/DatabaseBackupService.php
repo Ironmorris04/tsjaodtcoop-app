@@ -39,14 +39,14 @@ class DatabaseBackupService
         try {
             // 1. Create SQL dump
             $command = sprintf(
-                '"%s" --protocol=TCP --host=%s --port=%d --user=%s --password=%s %s > "%s" 2>&1',
-                $mysqldump,
-                $config['host'],
+                '%s --protocol=TCP --host=%s --port=%d --user=%s --password=%s %s > %s 2>&1',
+                escapeshellcmd($mysqldump),
+                escapeshellarg($config['host']),
                 $config['port'],
-                $config['username'],
-                $config['password'],
-                $config['database'],
-                $sqlPath
+                escapeshellarg($config['username']),
+                escapeshellarg($config['password']),
+                escapeshellarg($config['database']),
+                escapeshellarg($sqlPath)
             );
 
             exec($command, $output, $resultCode);
