@@ -20,13 +20,16 @@ class TreasurerController extends Controller
         $month = (int) $request->input('month', now()->month);
         $year = (int) $request->input('year', now()->year);
 
+        // Get sort direction
+        $sort = $request->input('sort', 'desc'); // default desc
+
         // Get transactions for the selected month
         $query = Transaction::with(['operator.user'])
             ->whereYear('date', $year)
             ->whereMonth('date', $month);
 
-        $transactions = $query->orderBy('date', 'asc')
-            ->orderBy('created_at', 'asc')
+        $transactions = $query->orderBy('date', $sort)
+            ->orderBy('created_at', $sort)
             ->paginate(50);
 
         // Calculate monthly totals
@@ -62,6 +65,8 @@ class TreasurerController extends Controller
      */
     public function cashReceiptsJournal(Request $request)
     {
+        $sort = $request->input('sort', 'desc'); // default desc
+
         // Handle search query - search all data if search term provided
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
@@ -82,7 +87,7 @@ class TreasurerController extends Controller
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('or_number', 'LIKE', "%{$searchTerm}%")
-                    ->orderBy('date', 'desc')
+                    ->orderBy('date', $sort)
                     ->paginate(50);
 
                 $totalReceipts = Transaction::where('type', 'receipt')
@@ -101,7 +106,7 @@ class TreasurerController extends Controller
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('or_number', 'LIKE', "%{$searchTerm}%")
-                    ->orderBy('date', 'desc')
+                    ->orderBy('date', $sort)
                     ->paginate(50);
 
                 $totalReceipts = Transaction::where('type', 'receipt')
@@ -121,7 +126,7 @@ class TreasurerController extends Controller
             ->where('type', 'receipt')
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
-            ->orderBy('date', 'desc')
+            ->orderBy('date', $sort)
             ->paginate(50);
 
         $totalReceipts = Transaction::where('type', 'receipt')
@@ -137,6 +142,8 @@ class TreasurerController extends Controller
      */
     public function cashDisbursementBook(Request $request)
     {
+        $sort = $request->input('sort', 'desc'); // default desc
+
         // Handle search query - search all data if search term provided
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
@@ -155,7 +162,7 @@ class TreasurerController extends Controller
                     ->where('type', 'disbursement')
                     ->whereYear('date', $year)
                     ->where('or_number', 'LIKE', "%{$searchTerm}%")
-                    ->orderBy('date', 'desc')
+                    ->orderBy('date', $sort)
                     ->paginate(50);
 
                 $totalDisbursements = Transaction::where('type', 'disbursement')
@@ -171,7 +178,7 @@ class TreasurerController extends Controller
                     ->where('type', 'disbursement')
                     ->whereYear('date', $year)
                     ->where('or_number', 'LIKE', "%{$searchTerm}%")
-                    ->orderBy('date', 'desc')
+                    ->orderBy('date', $sort)
                     ->paginate(50);
 
                 $totalDisbursements = Transaction::where('type', 'disbursement')
@@ -188,7 +195,7 @@ class TreasurerController extends Controller
         $disbursements = Transaction::with(['operator.user'])
             ->where('type', 'disbursement')
             ->whereYear('date', $year)
-            ->orderBy('date', 'desc')
+            ->orderBy('date', $sort)
             ->paginate(50);
 
         $totalDisbursements = Transaction::where('type', 'disbursement')
@@ -203,6 +210,8 @@ class TreasurerController extends Controller
      */
     public function cashBook(Request $request)
     {
+        $sort = $request->input('sort', 'desc'); // default desc
+
         // Handle search query - search all data if search term provided
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
@@ -219,8 +228,8 @@ class TreasurerController extends Controller
                 $transactions = Transaction::with(['operator.user'])
                     ->whereYear('date', $year)
                     ->where('or_number', 'LIKE', "%{$searchTerm}%")
-                    ->orderBy('date', 'asc')
-                    ->orderBy('created_at', 'asc')
+                    ->orderBy('date', $sort)
+                    ->orderBy('created_at', $sort)
                     ->paginate(50);
 
                 $totalIn = Transaction::where('type', 'receipt')
@@ -244,8 +253,8 @@ class TreasurerController extends Controller
                 $transactions = Transaction::with(['operator.user'])
                     ->whereYear('date', $year)
                     ->where('or_number', 'LIKE', "%{$searchTerm}%")
-                    ->orderBy('date', 'asc')
-                    ->orderBy('created_at', 'asc')
+                    ->orderBy('date', $sort)
+                    ->orderBy('created_at', $sort)
                     ->paginate(50);
 
                 $totalIn = Transaction::where('type', 'receipt')
@@ -270,8 +279,8 @@ class TreasurerController extends Controller
 
         $transactions = Transaction::with(['operator.user'])
             ->whereYear('date', $year)
-            ->orderBy('date', 'asc')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('date', $sort)
+            ->orderBy('created_at', $sort)
             ->paginate(50);
 
         $totalIn = Transaction::where('type', 'receipt')
@@ -298,6 +307,7 @@ class TreasurerController extends Controller
         // Get year and search from request
         $year = (int) $request->input('year', now()->year);
         $search = $request->input('search', '');
+        $sort = $request->input('sort', 'desc'); // default desc
 
         $query = Transaction::with(['operator.user', 'operator.operatorDetail'])
             ->whereYear('date', $year);
@@ -307,9 +317,9 @@ class TreasurerController extends Controller
             $query->where('or_number', 'LIKE', "%{$search}%");
         }
 
-        $transactions = $query->orderBy('date', 'asc')
-            ->orderBy('created_at', 'asc')
-            ->get();
+        $transactions = $query->orderBy('date', $sort)
+            ->orderBy('created_at', $sort)
+            ->get(); // Use get() for PDF
 
         // Calculate totals for the filtered data
         $totalIn = $transactions->where('type', 'receipt')->sum('amount');
@@ -339,15 +349,15 @@ class TreasurerController extends Controller
      */
     public function downloadCashTreasurersBookPdf(Request $request)
     {
-        // Get month and year from request
         $month = (int) $request->input('month', now()->month);
         $year = (int) $request->input('year', now()->year);
+        $sort = $request->input('sort', 'desc'); // default desc
 
         $transactions = Transaction::with(['operator.user', 'operator.operatorDetail'])
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
-            ->orderBy('date', 'asc')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('date', $sort)
+            ->orderBy('created_at', $sort)
             ->get();
 
         // Calculate monthly totals
@@ -363,7 +373,6 @@ class TreasurerController extends Controller
                 'isRemoteEnabled' => true,
             ]);
 
-        // Log PDF download
         AuditTrail::log(
             'download',
             "Downloaded Cash Treasurer's Book PDF for " . date('F', mktime(0, 0, 0, $month, 1)) . " {$year}"
@@ -377,19 +386,18 @@ class TreasurerController extends Controller
      */
     public function downloadCashReceiptsJournalPdf(Request $request)
     {
-        // Get month and year from request
         $month = (int) $request->input('month', now()->month);
         $year = (int) $request->input('year', now()->year);
+        $sort = $request->input('sort', 'desc'); // default desc
 
         $transactions = Transaction::with(['operator.user', 'operator.operatorDetail'])
             ->where('type', 'receipt')
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
-            ->orderBy('date', 'asc')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('date', $sort)
+            ->orderBy('created_at', $sort)
             ->get();
 
-        // Calculate total receipts
         $totalReceipts = $transactions->sum('amount');
 
         $data = compact('transactions', 'totalReceipts', 'month', 'year');
@@ -401,7 +409,6 @@ class TreasurerController extends Controller
                 'isRemoteEnabled' => true,
             ]);
 
-        // Log PDF download
         AuditTrail::log(
             'download',
             "Downloaded Cash Receipts Journal PDF for " . date('F', mktime(0, 0, 0, $month, 1)) . " {$year}"
@@ -415,17 +422,16 @@ class TreasurerController extends Controller
      */
     public function downloadCashDisbursementBookPdf(Request $request)
     {
-        // Get year from request
         $year = (int) $request->input('year', now()->year);
+        $sort = $request->input('sort', 'desc'); // default desc
 
         $transactions = Transaction::with(['operator.user', 'operator.operatorDetail'])
             ->where('type', 'disbursement')
             ->whereYear('date', $year)
-            ->orderBy('date', 'asc')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('date', $sort)
+            ->orderBy('created_at', $sort)
             ->get();
 
-        // Calculate total disbursements
         $totalDisbursements = $transactions->sum('amount');
 
         $data = compact('transactions', 'totalDisbursements', 'year');
@@ -437,7 +443,6 @@ class TreasurerController extends Controller
                 'isRemoteEnabled' => true,
             ]);
 
-        // Log PDF download
         AuditTrail::log(
             'download',
             "Downloaded Cash Disbursement Book PDF for year {$year}"
