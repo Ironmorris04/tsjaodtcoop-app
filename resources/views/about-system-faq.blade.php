@@ -100,7 +100,7 @@
 <div class="bylaws-accordion">
 
     <!-- Q1 -->
-    <div class="accordion-item active">
+    <div class="accordion-item">
         <button class="accordion-header">
             <span>Q1: How do I log in to the system?</span>
             <i class="fas fa-chevron-down"></i>
