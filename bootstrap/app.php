@@ -66,6 +66,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ->name('daily-db-backup')
         ->daily()
         ->withoutOverlapping()
+        ->onOneServer()
         ->timezone('Asia/Manila');
 
     })
