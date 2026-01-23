@@ -36,8 +36,9 @@ WORKDIR /var/www
 # Copy composer files first (for better caching)
 COPY composer.json composer.lock ./
 
-# Install dependencies without memory limits (verbose for debug)
-RUN composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction --verbose
+# Install dependencies without memory limits
+RUN composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction || \
+    (composer diagnose && composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction --verbose)
 
 # Copy rest of application
 COPY . .
