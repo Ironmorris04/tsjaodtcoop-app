@@ -200,6 +200,7 @@
         $routeName = auth()->user()->role === 'admin' ? 'admin.cash-disbursement-book' :
                      (auth()->user()->role === 'operator' ? 'operator.cash-disbursement-book' : 'treasurer.cash-disbursement-book');
     @endphp
+
     <form method="GET" action="{{ route($routeName) }}" class="filter-section">
         <label for="year">Year:</label>
         <select name="year" id="year" class="filter-select">
@@ -218,6 +219,17 @@
             value="{{ request('search') }}"
             style="min-width: 200px;"
         >
+
+        <!-- SORT DROPDOWN -->
+        <label for="sort">Sort:</label>
+        <select name="sort" id="sort" class="filter-select">
+            <option value="desc" {{ request('sort', 'desc') === 'desc' ? 'selected' : '' }}>
+                Newest First
+            </option>
+            <option value="asc" {{ request('sort') === 'asc' ? 'selected' : '' }}>
+                Oldest First
+            </option>
+        </select>
 
         <button type="submit" class="btn-filter">
             <i class="fas fa-search"></i> Filter
@@ -351,7 +363,7 @@
 
     @if($disbursements->hasPages())
         <div class="pagination-container">
-            {{ $disbursements->appends(['search' => request('search'), 'year' => $year])->links('vendor.pagination.custom') }}
+            {{ $disbursements->appends(['search' => request('search'), 'year' => $year, 'sort' => request('sort', 'desc')])->links('vendor.pagination.custom') }}
         </div>
     @endif
 </div>
@@ -362,9 +374,10 @@
 <script>
     function downloadCashDisbursementBook() {
         const year = document.getElementById('year').value;
+        const sort = document.getElementById('sort').value;
 
         let url = '{{ route("admin.cash-disbursement-book.download-pdf") }}';
-        url += `?year=${year}`;
+        url += `?year=${year}&sort=${sort}`;
 
         // Open download in new window
         window.open(url, '_blank');
