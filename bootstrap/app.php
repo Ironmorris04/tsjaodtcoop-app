@@ -1,71 +1,76 @@
-FROM php:8.2-cli
+<?php
+// bootstrap/app.php
 
-# Prevent apt warnings
-ENV DEBIAN_FRONTEND=noninteractive
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Console\Scheduling\Schedule;
 
-# Force cache invalidation - change this value when you need to rebuild from scratch
-ENV CACHE_BUST=2026-01-11-v1
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+            'system.admin' => \App\Http\Middleware\SystemAdminMiddleware::class, // ✅ ADDED
+        ]);
 
-# Install system dependencies including Ghostscript
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    ghostscript \
-    libgs-dev \
-    default-mysql-client \
-    cron \
-    && rm -rf /var/lib/apt/lists/*
+        // Trust proxies for Cloudflare Tunnel
+        $middleware->trustProxies(at: '*');
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+        // Configure the redirect for unauthenticated users
+        $middleware->redirectGuestsTo('/login');
+    })
+    ->withSchedule(function (Schedule $schedule) {
 
-# Get Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+        // Send expiring document notifications daily at 10:00 AM
+        $schedule->command('notify:expiring-documents')
+            ->dailyAt('10:00')
+            ->timezone('Asia/Manila');
 
-# Allow Composer unlimited memory
-ENV COMPOSER_MEMORY_LIMIT=-1
+        /*
+        |--------------------------------------------------------------------------
+        | Automatic Daily Database Backup (CUSTOM – NO SPATIE)
+        |--------------------------------------------------------------------------
+        */
+        $schedule->call(function () {
 
-# Set working directory
-WORKDIR /var/www
+            $filename = 'auto_backup_' . now()->format('Y-m-d_H-i-s');
 
-# Copy composer files first (for better caching)
-COPY composer.json composer.lock ./
+            // Log backup attempt
+            $log = \App\Models\BackupLog::create([
+                'filename' => $filename . '.sql',
+                'status'   => 'pending',
+                'admin_id' => null, // automatic backup
+            ]);
 
-# Install dependencies without memory limits
-RUN composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction || \
-    (composer diagnose && composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction --verbose)
+            try {
+                // Run custom backup service
+                app(\App\Services\DatabaseBackupService::class)->run($filename);
 
-# Copy rest of application
-COPY . .
+                $log->update([
+                    'status' => 'success',
+                ]);
 
-# Run post-install scripts
-RUN composer dump-autoload --optimize
+            } catch (\Exception $e) {
+                $log->update([
+                    'status' => 'failed',
+                    'notes'  => $e->getMessage(),
+                ]);
+            }
 
-# Set permissions
-RUN chmod -R 755 /var/www/storage \
-    && chmod -R 755 /var/www/bootstrap/cache
+        })
+        ->name('daily-db-backup')
+        ->daily()
+        ->withoutOverlapping()
+        ->onOneServer()
+        ->timezone('Asia/Manila');
 
-# Expose port (Render will provide $PORT)
-EXPOSE 8000
-
-# Add cron job for Laravel scheduler
-RUN echo "* * * * * cd /var/www && php artisan schedule:run >> /var/www/storage/logs/scheduler.log 2>&1" > /etc/cron.d/laravel-scheduler \
-    && chmod 0644 /etc/cron.d/laravel-scheduler \
-    && crontab /etc/cron.d/laravel-scheduler
-
-# Start cron + Laravel server
-CMD service cron start && \
-    php artisan config:clear && \
-    php artisan cache:clear && \
-    if ! php artisan migrate:status > /dev/null 2>&1; then \
-        echo "No tables found. Running migrations..." && \
-        php artisan migrate --force; \
-    else \
-        echo "Database already initialized. Skipping migrations."; \
-    fi && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+    })
+    ->withExceptions(function (Exceptions $exceptions) {
+        //
+    })
+    ->create();
