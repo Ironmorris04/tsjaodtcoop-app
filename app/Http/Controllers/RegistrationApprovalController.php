@@ -58,72 +58,93 @@ class RegistrationApprovalController extends Controller
     }
 
     /**
-     * Approve a registration.
-     */
-   public function approve(Request $request, $id)
-    {
-        $operator = Operator::findOrFail($id);
+ * Approve a registration.
+ */
+public function approve(Request $request, $id)
+{
+    $operator = Operator::findOrFail($id);
 
-        // Check if membership form is uploaded
-        if (!$operator->membership_form_path) {
-            return redirect()->back()
-                ->withErrors(['membership_form' => 'Please upload the operator\'s membership form before approving the application.'])
-                ->withInput();
+    // Check if membership form is uploaded
+    if (!$operator->membership_form_path) {
+        return redirect()->back()
+            ->withErrors(['membership_form' => 'Please upload the operator\'s membership form before approving the application.'])
+            ->withInput();
+    }
+
+    /**
+     * ✅ Generate PNG preview if the uploaded membership form is a PDF
+     */
+    $s3PdfPath = $operator->membership_form_path;
+    $extension = strtolower(pathinfo($s3PdfPath, PATHINFO_EXTENSION));
+
+    if ($extension === 'pdf') {
+
+        // S3 directories (logical folders)
+        $previewDir = 'membership_forms/previews';
+
+        // Filenames
+        $pdfFilename = pathinfo($s3PdfPath, PATHINFO_FILENAME);
+        $previewFilename = $pdfFilename . '.png';
+        $s3PreviewPath = $previewDir . '/' . $previewFilename;
+
+        // TEMP paths (required for binary execution, not persistence)
+        $tempPdf = '/tmp/' . basename($s3PdfPath);
+        $tempPng = '/tmp/' . $previewFilename;
+
+        // Pull PDF from S3
+        file_put_contents($tempPdf, Storage::disk('s3')->get($s3PdfPath));
+
+        // Absolute path to Ghostscript binary
+        $gs = env('GHOSTSCRIPT_PATH', '/usr/bin/gs');
+
+        // Ensure Ghostscript is available
+        if (!is_executable($gs)) {
+            Log::error('Ghostscript not found or not executable', [
+                'path' => $gs,
+                'pdf' => $s3PdfPath,
+            ]);
+
+            @unlink($tempPdf);
+            return redirect()->back()->withErrors([
+                'membership_form' => 'Unable to generate preview (Ghostscript missing).'
+            ]);
         }
 
-        /**
-         * ✅ Generate PNG preview if the uploaded membership form is a PDF
-         */
-        $s3PdfPath = $operator->membership_form_path;
-        $extension = strtolower(pathinfo($s3PdfPath, PATHINFO_EXTENSION));
+        // Generate first-page PNG safely
+        $cmd = sprintf(
+            '%s -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r150 -dFirstPage=1 -dLastPage=1 -sOutputFile=%s %s',
+            escapeshellarg($gs),
+            escapeshellarg($tempPng),
+            escapeshellarg($tempPdf)
+        );
 
-        if ($extension === 'pdf') {
+        exec($cmd, $output, $code);
 
-            // S3 directories (logical folders)
-            $previewDir = 'membership_forms/previews';
+        if ($code === 0 && file_exists($tempPng)) {
 
-            // Filenames
-            $pdfFilename = pathinfo($s3PdfPath, PATHINFO_FILENAME);
-            $previewFilename = $pdfFilename . '.png';
-            $s3PreviewPath = $previewDir . '/' . $previewFilename;
-
-            // TEMP paths (required for binary execution, not persistence)
-            $tempPdf = '/tmp/' . basename($s3PdfPath);
-            $tempPng = '/tmp/' . $previewFilename;
-
-            // Pull PDF from S3
-            file_put_contents($tempPdf, Storage::disk('s3')->get($s3PdfPath));
-
-            $gs = env('GHOSTSCRIPT_PATH', 'gs');
-
-            // Generate first-page PNG
-            $cmd = sprintf(
-                '%s -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r150 -dFirstPage=1 -dLastPage=1 -sOutputFile="%s" "%s"',
-                $gs,
-                $tempPng,
-                $tempPdf
+            // Push preview to S3 (membership_forms/previews/)
+            Storage::disk('s3')->put(
+                $s3PreviewPath,
+                file_get_contents($tempPng),
+                'public'
             );
 
-            exec($cmd, $output, $code);
+            // Save S3 preview path
+            $operator->membership_form_preview_path = $s3PreviewPath;
+            $operator->save();
 
-            if ($code === 0 && file_exists($tempPng)) {
-
-                // Push preview to S3 (membership_forms/previews/)
-                Storage::disk('s3')->put(
-                    $s3PreviewPath,
-                    file_get_contents($tempPng),
-                    'public'
-                );
-
-                // Save S3 preview path
-                $operator->membership_form_preview_path = $s3PreviewPath;
-                $operator->save();
-            }
-
-            // Cleanup (always)
-            @unlink($tempPdf);
-            @unlink($tempPng);
+        } else {
+            Log::error('Ghostscript conversion failed', [
+                'code' => $code,
+                'output' => $output,
+                'pdf' => $s3PdfPath,
+            ]);
         }
+
+        // Cleanup (always)
+        @unlink($tempPdf);
+        @unlink($tempPng);
+    }
 
         /**
          * ✅ Continue with the normal approval process
