@@ -64,11 +64,17 @@ RUN echo "* * * * * cd /var/www && php artisan schedule:run >> /var/www/storage/
 # Start cron + Laravel server
 CMD service cron start && \
     php artisan config:clear && \
-    php artisan cache:clear && \
+
+    # Ensure cache table exists before clearing (needed when CACHE_STORE=database)
+    php artisan cache:table --quiet || true && \
+
+    # Run migrations first (so cache table is created) then clear cache
     if ! php artisan migrate:status > /dev/null 2>&1; then \
-        echo \"No tables found. Running migrations...\" && \
+        echo "No tables found. Running migrations..." && \
         php artisan migrate --force; \
     else \
-        echo \"Database already initialized. Skipping migrations.\"; \
+        echo "Database already initialized. Skipping migrations."; \
     fi && \
+
+    php artisan cache:clear && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
