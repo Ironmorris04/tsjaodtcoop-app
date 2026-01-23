@@ -25,4 +25,15 @@ class LandingController extends Controller
     {
         return view('about-system');
     }
+
+    /**
+     * Display the System FAQ page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function systemFAQ()
+    {
+        return view('about-system-faq');
+    }
+
 }
