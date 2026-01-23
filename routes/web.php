@@ -33,6 +33,10 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 // About System Page
 Route::get('/about-system', [LandingController::class, 'aboutSystem'])
     ->name('about.system');
+
+// About System FAQ
+Route::get('/system-FAQ', [LandingController::class, 'systemFAQ'])
+    ->name('system.faq');
     
 // Terms and Conditions page (publicly accessible)
 Route::get('/terms', function () {
