@@ -236,12 +236,19 @@
         $routeName = auth()->user()->role === 'admin' ? 'admin.cash-book' :
                      (auth()->user()->role === 'operator' ? 'operator.cash-book' : 'treasurer.cash-book');
     @endphp
+
     <form method="GET" action="{{ route($routeName) }}" class="filter-section">
         <label for="year">Year:</label>
         <select name="year" id="year" class="filter-select">
             @for($y = date('Y'); $y >= 2020; $y--)
                 <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
             @endfor
+        </select>
+
+        <label for="sort">Sort:</label>
+        <select name="sort" id="sort" class="filter-select">
+            <option value="desc" {{ request('sort', 'desc') == 'desc' ? 'selected' : '' }}>Newest First</option>
+            <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Oldest First</option>
         </select>
 
         <label for="searchInput">Search:</label>
@@ -260,7 +267,7 @@
         </button>
 
         @if(request('search'))
-            <a href="{{ route($routeName, ['year' => $year]) }}" class="btn-filter" style="background: #ef4444; text-decoration: none;">
+            <a href="{{ route($routeName, ['year' => $year, 'sort' => request('sort', 'desc')]) }}" class="btn-filter" style="background: #ef4444; text-decoration: none;">
                 <i class="fas fa-times"></i> Clear
             </a>
         @endif
@@ -300,8 +307,6 @@
             @endphp
             @forelse($transactions as $transaction)
                 @php
-                    // For now, assume all receipts are cash on hand
-                    // In future, add logic to distinguish between cash and bank
                     if ($transaction->type === 'receipt') {
                         $cashOnHandBalance += $transaction->amount;
                     } else {
@@ -366,7 +371,11 @@
 
     @if($transactions->hasPages())
         <div class="pagination-container">
-            {{ $transactions->appends(['search' => request('search'), 'year' => $year])->links('vendor.pagination.custom') }}
+            {{ $transactions->appends([
+                'search' => request('search'),
+                'year' => $year,
+                'sort' => request('sort', 'desc')
+            ])->links('vendor.pagination.custom') }}
         </div>
     @endif
 </div>
@@ -378,21 +387,19 @@
     function downloadCashBook() {
         const year = document.getElementById('year').value;
         const search = document.getElementById('searchInput').value;
+        const sort = document.getElementById('sort').value;
 
-        // Determine the correct route based on user role
         @php
             $downloadRouteName = auth()->user()->role === 'admin' ? 'admin.cash-book.download-pdf' :
                                 (auth()->user()->role === 'operator' ? 'operator.cash-book.download-pdf' : 'treasurer.cash-book.download-pdf');
         @endphp
 
-        // Build URL with current filters
         let url = '{{ route($downloadRouteName) }}';
-        url += `?year=${year}`;
+        url += `?year=${year}&sort=${sort}`;
         if (search) {
             url += `&search=${encodeURIComponent(search)}`;
         }
 
-        // Open download in new window
         window.open(url, '_blank');
     }
 </script>
