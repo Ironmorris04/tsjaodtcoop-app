@@ -105,7 +105,7 @@
 <div class="bylaws-accordion">
 
     <!-- System Overview -->
-    <div class="accordion-item active">
+    <div class="accordion-item">
         <button class="accordion-header">
             <span>System Overview</span>
             <i class="fas fa-chevron-down"></i>
