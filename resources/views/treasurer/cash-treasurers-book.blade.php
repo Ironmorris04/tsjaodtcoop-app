@@ -167,6 +167,23 @@
         margin-left: auto;
     }
 
+    /* Sort dropdown styling */
+    .sort-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .sort-select {
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 14px;
+        min-width: 150px;
+        background: white;
+        cursor: pointer;
+    }
+
     /* Add Entry Modal Styles */
     .modal-overlay {
         display: none;
@@ -374,12 +391,12 @@
 
 
 
-    <!-- Month/Year Filter -->
+    <!-- Month/Year Filter with Sort Option -->
     @php
         $routeName = auth()->user()->role === 'admin' ? 'admin.cash-treasurers-book' :
                      (auth()->user()->role === 'operator' ? 'operator.cash-treasurers-book' : 'treasurer.cash-treasurers-book');
     @endphp
-    <form method="GET" action="{{ route($routeName) }}" class="filter-section">
+    <form method="GET" action="{{ route($routeName) }}" class="filter-section" id="filterForm">
         <label for="month">Month:</label>
         <select name="month" id="month" class="filter-select">
             @for($m = 1; $m <= 12; $m++)
@@ -395,6 +412,18 @@
                 <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
             @endfor
         </select>
+
+        <div class="sort-group">
+            <label for="sort">Sort By:</label>
+            <select name="sort" id="sort" class="sort-select">
+                <option value="desc" {{ request('sort', 'desc') == 'desc' ? 'selected' : '' }}>
+                    Newest First
+                </option>
+                <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>
+                    Oldest First
+                </option>
+            </select>
+        </div>
 
         <button type="submit" class="btn-filter">
             <i class="fas fa-filter"></i> Apply Filter
@@ -480,7 +509,7 @@
 
     @if($transactions->hasPages())
         <div class="pagination-container">
-            {{ $transactions->links('vendor.pagination.custom') }}
+            {{ $transactions->appends(['month' => $month, 'year' => $year, 'sort' => request('sort', 'desc')])->links('vendor.pagination.custom') }}
         </div>
     @endif
 </div>
@@ -547,9 +576,10 @@
     function downloadCashTreasurersBook() {
         const month = document.getElementById('month').value;
         const year = document.getElementById('year').value;
+        const sort = document.getElementById('sort').value;
 
         let url = '{{ route("admin.cash-treasurers-book.download-pdf") }}';
-        url += `?month=${month}&year=${year}`;
+        url += `?month=${month}&year=${year}&sort=${sort}`;
 
         // Open download in new window
         window.open(url, '_blank');
