@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Cash Receipts Journal')
-
 @section('page-title', 'Cash Receipts Journal')
 
 @push('styles')
@@ -200,6 +199,7 @@
         $routeName = auth()->user()->role === 'admin' ? 'admin.cash-receipts-journal' :
                      (auth()->user()->role === 'operator' ? 'operator.cash-receipts-journal' : 'treasurer.cash-receipts-journal');
     @endphp
+
     <form method="GET" action="{{ route($routeName) }}" class="filter-section">
         <label for="month">Month:</label>
         <select name="month" id="month" class="filter-select">
@@ -227,6 +227,17 @@
             value="{{ request('search') }}"
             style="min-width: 200px;"
         >
+
+        <!-- NEW SORT DROPDOWN -->
+        <label for="sort">Sort:</label>
+        <select name="sort" id="sort" class="filter-select">
+            <option value="desc" {{ request('sort', 'desc') === 'desc' ? 'selected' : '' }}>
+                Newest First
+            </option>
+            <option value="asc" {{ request('sort') === 'asc' ? 'selected' : '' }}>
+                Oldest First
+            </option>
+        </select>
 
         <button type="submit" class="btn-filter">
             <i class="fas fa-search"></i> Filter
@@ -357,7 +368,7 @@
 
     @if($receipts->hasPages())
         <div class="pagination-container">
-            {{ $receipts->appends(['search' => request('search'), 'month' => $month, 'year' => $year])->links('vendor.pagination.custom') }}
+            {{ $receipts->appends(['search' => request('search'), 'month' => $month, 'year' => $year, 'sort' => request('sort', 'desc')])->links('vendor.pagination.custom') }}
         </div>
     @endif
 </div>
@@ -369,9 +380,10 @@
     function downloadCashReceiptsJournal() {
         const month = document.getElementById('month').value;
         const year = document.getElementById('year').value;
+        const sort = document.getElementById('sort').value; // NEW
 
         let url = '{{ route("admin.cash-receipts-journal.download-pdf") }}';
-        url += `?month=${month}&year=${year}`;
+        url += `?month=${month}&year=${year}&sort=${sort}`; // UPDATED
 
         // Open download in new window
         window.open(url, '_blank');
