@@ -4,7 +4,7 @@ FROM php:8.2-cli
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Force cache invalidation - change this value when you need to rebuild from scratch
-ENV CACHE_BUST=2024-01-10-v1
+ENV CACHE_BUST=2026-01-11-v1
 
 # Install system dependencies including Ghostscript
 RUN apt-get update && apt-get install -y \
@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     ghostscript \
     libgs-dev \
     default-mysql-client \
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
@@ -26,8 +27,8 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 # Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Increase memory limit for Composer
-RUN echo "memory_limit = 512M" > /usr/local/etc/php/conf.d/memory.ini
+# Allow Composer unlimited memory
+ENV COMPOSER_MEMORY_LIMIT=-1
 
 # Set working directory
 WORKDIR /var/www
@@ -35,10 +36,8 @@ WORKDIR /var/www
 # Copy composer files first (for better caching)
 COPY composer.json composer.lock ./
 
-# Install dependencies with retries and prefer-dist
-RUN composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist || \
-    composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist || \
-    composer install --no-dev --optimize-autoloader --no-scripts
+# Install dependencies without memory limits
+RUN composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
 
 # Copy rest of application
 COPY . .
@@ -53,7 +52,19 @@ RUN chmod -R 755 /var/www/storage \
 # Expose port (Render will provide $PORT)
 EXPOSE 8000
 
-# Run artisan commands at startup (when .env is available), then start server
-CMD php artisan config:clear && \
+# Add cron job for Laravel scheduler
+RUN echo "* * * * * cd /var/www && php artisan schedule:run >> /var/www/storage/logs/scheduler.log 2>&1" > /etc/cron.d/laravel-scheduler \
+    && chmod 0644 /etc/cron.d/laravel-scheduler \
+    && crontab /etc/cron.d/laravel-scheduler
+
+# Start cron + Laravel server
+CMD service cron start && \
+    php artisan config:clear && \
     php artisan cache:clear && \
+    if ! php artisan migrate:status > /dev/null 2>&1; then \
+        echo "No tables found. Running migrations..." && \
+        php artisan migrate --force; \
+    else \
+        echo "Database already initialized. Skipping migrations."; \
+    fi && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
