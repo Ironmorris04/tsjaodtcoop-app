@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     ghostscript \
     libgs-dev \
     default-mysql-client \
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
@@ -51,7 +52,19 @@ RUN chmod -R 755 /var/www/storage \
 # Expose port (Render will provide $PORT)
 EXPOSE 8000
 
-# Run artisan commands at startup (when .env is available), then start server
-CMD php artisan config:clear && \
+# Add cron job for Laravel scheduler
+RUN echo "* * * * * cd /var/www && php artisan schedule:run >> /var/www/storage/logs/scheduler.log 2>&1" > /etc/cron.d/laravel-scheduler \
+    && chmod 0644 /etc/cron.d/laravel-scheduler \
+    && crontab /etc/cron.d/laravel-scheduler
+
+# Start cron + Laravel server
+CMD service cron start && \
+    php artisan config:clear && \
     php artisan cache:clear && \
+    if ! php artisan migrate:status > /dev/null 2>&1; then \
+        echo "No tables found. Running migrations..." && \
+        php artisan migrate --force; \
+    else \
+        echo "Database already initialized. Skipping migrations."; \
+    fi && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
