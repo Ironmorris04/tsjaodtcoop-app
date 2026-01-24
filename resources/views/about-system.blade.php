@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>About the System</title>
 
+    <!-- Mobile viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -36,7 +39,6 @@
             margin-bottom: 1rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             overflow: hidden;
-            transition: all 0.3s ease;
         }
 
         .accordion-header {
@@ -51,6 +53,7 @@
             justify-content: space-between;
             font-size: 1.1rem;
             font-weight: 600;
+            text-align: left;
         }
 
         .accordion-header i {
@@ -87,12 +90,59 @@
             color: #0284c7;
         }
 
-        /* Footer Info */
+        /* Footer */
         .footer-note {
             margin-top: 3rem;
             text-align: center;
             color: #475569;
             font-style: italic;
+            padding: 0 1rem;
+        }
+
+        /* =========================
+           📱 MOBILE RESPONSIVENESS
+           ========================= */
+        @media (max-width: 768px) {
+
+            body {
+                padding: 1rem;
+            }
+
+            .page-title h1 {
+                font-size: 1.6rem;
+            }
+
+            .accordion-header {
+                padding: 1rem 1.2rem;
+                font-size: 1rem;
+            }
+
+            .accordion-content {
+                padding: 0 1.2rem;
+            }
+
+            .accordion-item.active .accordion-content {
+                padding: 1.2rem;
+            }
+
+            .accordion-content p,
+            .accordion-content li {
+                font-size: 0.95rem;
+            }
+
+            .accordion-content ul {
+                margin-left: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title h1 {
+                font-size: 1.4rem;
+            }
+
+            .accordion-header {
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
@@ -104,7 +154,6 @@
 
 <div class="bylaws-accordion">
 
-    <!-- System Overview -->
     <div class="accordion-item">
         <button class="accordion-header">
             <span>System Overview</span>
@@ -120,7 +169,6 @@
         </div>
     </div>
 
-    <!-- Key Features -->
     <div class="accordion-item">
         <button class="accordion-header">
             <span>Key Features</span>
@@ -137,7 +185,6 @@
         </div>
     </div>
 
-    <!-- Security & Compliance -->
     <div class="accordion-item">
         <button class="accordion-header">
             <span>Security & Compliance</span>
@@ -153,7 +200,6 @@
         </div>
     </div>
 
-    <!-- Development Team -->
     <div class="accordion-item">
         <button class="accordion-header">
             <span>Development Team</span>
@@ -165,7 +211,6 @@
                 <strong>BS Information Technology students</strong> from
                 <strong>Eastern Visayas State University (EVSU)</strong>.
             </p>
-
             <ul>
                 <li>Merie Joy P. Delampasig</li>
                 <li>Iron Morris P. Distrajo</li>
@@ -174,7 +219,6 @@
         </div>
     </div>
 
-    <!-- Technical Specs -->
     <div class="accordion-item">
         <button class="accordion-header">
             <span>Technical Specifications</span>
@@ -190,7 +234,6 @@
         </div>
     </div>
 
-    <!-- Version -->
     <div class="accordion-item">
         <button class="accordion-header">
             <span>Version Information</span>
@@ -215,8 +258,7 @@
 <script>
     document.querySelectorAll('.accordion-header').forEach(button => {
         button.addEventListener('click', () => {
-            const item = button.parentElement;
-            item.classList.toggle('active');
+            button.parentElement.classList.toggle('active');
         });
     });
 </script>
