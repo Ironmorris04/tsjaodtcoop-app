@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <title>Frequently Asked Questions</title>
 
@@ -51,14 +52,22 @@
             justify-content: space-between;
             font-size: 1.1rem;
             font-weight: 600;
+            text-align: left;
         }
 
         .accordion-header i {
+            margin-left: 1rem;  
+            flex-shrink: 0;  
             transition: transform 0.3s ease;
         }
 
         .accordion-item.active .accordion-header i {
             transform: rotate(180deg);
+        }
+
+        .accordion-header span {
+            flex: 1;  /* ADD THIS - allows text to take available space */
+            text-align: left;  /* ADD THIS */
         }
 
         .accordion-content {
@@ -89,6 +98,51 @@
             color: #475569;
             font-style: italic;
         }
+
+        /* Mobile Responsive */
+    @media (max-width: 768px) {
+        body {
+            padding: 1rem;
+        }
+        
+        .page-title h1 {
+            font-size: 1.6rem;
+        }
+        
+        .accordion-header {
+            padding: 1rem 1.2rem;
+            font-size: 0.95rem;
+        }
+        
+        .accordion-content {
+            padding: 0 1.2rem;
+        }
+        
+        .accordion-item.active .accordion-content {
+            padding: 1.2rem;
+        }
+        
+        .footer-note {
+            font-size: 0.9rem;
+            padding: 0 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-title h1 {
+            font-size: 1.4rem;
+        }
+        
+        .accordion-header {
+            padding: 0.9rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .accordion-content p {
+            font-size: 0.9rem;
+        }
+    }
+
     </style>
 </head>
 <body>
