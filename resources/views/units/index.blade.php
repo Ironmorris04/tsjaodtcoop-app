@@ -1290,6 +1290,43 @@
         height: 110px;
     }
 }
+
+/* Responsive Page Header */
+@media (max-width: 768px) {
+    .page-header .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 15px;
+    }
+    
+    .page-header .add-unit-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .page-header p {
+        font-size: 0.875rem;
+    }
+}
+
+.nav-tabs .nav-link.active {
+    color: white !important;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-bottom: 3px solid #667eea;
+    border-radius: 8px 8px 0 0;
+}
+
+.nav-tabs .nav-link.active i,
+.nav-tabs .nav-link.active .badge {
+    color: white !important;
+}
+
 </style>
 
 <div class="page-header">
@@ -1309,12 +1346,16 @@
     <ul class="nav nav-tabs" id="unitTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="approved-tab" data-toggle="tab" data-target="#approved" type="button" role="tab">
-                <i class="fas fa-check-circle"></i> Approved Units <span class="badge badge-success ml-2">{{ $approvedUnits->count() }}</span>
+                <i class="fas fa-check-circle"></i> 
+                <span class="tab-text">Approved Units</span>
+                <span class="badge badge-success ml-3">{{ $approvedUnits->count() }}</span>
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="pending-tab" data-toggle="tab" data-target="#pending" type="button" role="tab">
-                <i class="fas fa-clock"></i> Pending Applications <span class="badge badge-warning ml-2">{{ $pendingUnits->count() }}</span>
+                <i class="fas fa-clock"></i> 
+                <span class="tab-text">Pending Applications</span>
+                <span class="badge badge-warning ml-3">{{ $pendingUnits->count() }}</span>
             </button>
         </li>
     </ul>
