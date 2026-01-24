@@ -1882,6 +1882,48 @@
             grid-template-columns: repeat(2, 1fr);
         }
     }
+
+    /* Balance Modal Responsive */
+    @media (max-width: 768px) {
+        /* Summary Cards - Stack vertically */
+        #balanceModalContent > div > div:first-child {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+        }
+        
+        /* Summary card font sizes */
+        #balanceModalContent > div > div:first-child > div {
+            padding: 15px !important;
+        }
+        
+        #balanceModalContent > div > div:first-child > div > div:first-child {
+            font-size: 12px !important;
+        }
+        
+        #balanceModalContent > div > div:first-child > div > div:last-child {
+            font-size: 20px !important;
+        }
+        
+        /* Table wrapper - enable horizontal scroll */
+        #balanceModalContent table {
+            font-size: 12px !important;
+        }
+        
+        #balanceModalContent th,
+        #balanceModalContent td {
+            padding: 10px 8px !important;
+        }
+        
+        /* Hide some columns on very small screens */
+        @media (max-width: 576px) {
+            /* You can optionally hide the "Obligations" column on very small screens */
+            #balanceModalContent table th:nth-child(2),
+            #balanceModalContent table td:nth-child(2) {
+                display: none;
+            }
+        }
+    }
+
 </style>
 @endpush
 
