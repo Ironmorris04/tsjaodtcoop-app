@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Force cache invalidation - change this value when you need to rebuild from scratch
 ENV CACHE_BUST=2026-01-11-v1
 
-# Install system dependencies including Ghostscript
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -33,10 +33,10 @@ ENV COMPOSER_MEMORY_LIMIT=-1
 # Set working directory
 WORKDIR /var/www
 
-# Copy composer files first (for better caching)
+# Copy composer files first (better cache)
 COPY composer.json composer.lock ./
 
-# ⬇️ FIX: disable scripts to prevent artisan from running during build
+# Install deps without scripts (no artisan during build)
 RUN composer install \
     --no-dev \
     --prefer-dist \
@@ -46,14 +46,20 @@ RUN composer install \
 # Copy rest of application
 COPY . .
 
-# Safe autoload optimization (no artisan)
+# Safe autoload optimization
 RUN composer dump-autoload --optimize
 
-# Set permissions
+# Permissions
 RUN chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache
 
-# Expose port (Render will provide $PORT)
+# ---------- ENTRYPOINT (DB creation) ----------
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
+# --------------------------------------------
+
+# Expose port (Render provides $PORT)
 EXPOSE 8000
 
 # Add cron job for Laravel scheduler
@@ -61,11 +67,10 @@ RUN echo "* * * * * cd /var/www && php artisan schedule:run >> /var/www/storage/
     && chmod 0644 /etc/cron.d/laravel-scheduler \
     && crontab /etc/cron.d/laravel-scheduler
 
-# Start cron + Laravel server
+# Start services AFTER entrypoint runs
 CMD service cron start && \
     php artisan config:clear && \
     php artisan cache:table --quiet || true && \
-    # Run migrations first (so cache table is created) then clear cache
     if ! php artisan migrate:status > /dev/null 2>&1; then \
         echo "No tables found. Running migrations..." && \
         php artisan migrate --force; \
