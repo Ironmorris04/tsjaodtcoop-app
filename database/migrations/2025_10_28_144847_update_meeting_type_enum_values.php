@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -10,16 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // MySQL doesn't support directly modifying ENUM values, so we need to use raw SQL
-        DB::statement("ALTER TABLE meetings MODIFY COLUMN type ENUM('general_assembly', 'board_of_directors', 'special', 'emergency') DEFAULT 'general_assembly'");
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        // Revert back to original ENUM values
-        DB::statement("ALTER TABLE meetings MODIFY COLUMN type ENUM('general', 'board', 'special', 'emergency') DEFAULT 'general'");
+        Schema::table('meetings', function (Blueprint $table) {
+            $table->dropColumn("type");
+            $table->enum('type', ['general_assembly', 'board_of_directors', 'special', 'emergency'])->default('general_assembly');
+        });
     }
 };
