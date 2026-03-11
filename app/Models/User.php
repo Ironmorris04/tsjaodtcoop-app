@@ -100,7 +100,7 @@ class User extends Authenticatable
      * Format: {RolePrefix}{SequenceNumber}-{Year}
      * Example: O001-2025, A001-2025, T001-2025
      */
-    public static function generateUserId($role)
+    public static function generateUserId(string $role): string
     {
         $rolePrefixes = [
             'admin' => 'A',
@@ -113,30 +113,33 @@ class User extends Authenticatable
         $prefix = $rolePrefixes[$role] ?? 'U';
         $year = date('Y');
 
-        // Find the highest sequence number for this role and year
-        $latestUserId = self::where('role', $role)
-            ->whereNotNull('user_id')
-            ->where('user_id', 'like', "{$prefix}%{$year}")
-            ->orderByRaw('CAST(SUBSTRING(user_id, 2, 3) AS UNSIGNED) DESC')
-            ->value('user_id');
+        $pattern = '/^' . preg_quote($prefix, '/') . '(\d{3})-' . preg_quote($year, '/') . '$/';
 
-        if ($latestUserId) {
-            // Extract the sequence number from the latest user ID
-            preg_match('/^[A-Z](\d+)-\d{4}$/', $latestUserId, $matches);
-            $lastSequence = isset($matches[1]) ? (int)$matches[1] : 0;
-            $sequenceNumber = str_pad($lastSequence + 1, 3, '0', STR_PAD_LEFT);
-        } else {
-            $sequenceNumber = '001';
+        $userIds = self::where('role', $role)
+            ->whereNotNull('user_id')
+            ->where('user_id', 'like', "{$prefix}%-{$year}")
+            ->pluck('user_id');
+
+        $lastSequence = 0;
+
+        foreach ($userIds as $existingUserId) {
+            if (preg_match($pattern, $existingUserId, $matches)) {
+                $sequence = (int) $matches[1];
+                if ($sequence > $lastSequence) {
+                    $lastSequence = $sequence;
+                }
+            }
         }
 
+        $sequenceNumber = str_pad((string) ($lastSequence + 1), 3, '0', STR_PAD_LEFT);
         $userId = "{$prefix}{$sequenceNumber}-{$year}";
 
-        // Double-check uniqueness to handle race conditions
+        // Double-check uniqueness to reduce collisions
         $attempts = 0;
         while (self::where('user_id', $userId)->exists() && $attempts < 100) {
             $attempts++;
-            $newSequence = (int)$sequenceNumber + $attempts;
-            $sequenceNumber = str_pad($newSequence, 3, '0', STR_PAD_LEFT);
+            $newSequence = $lastSequence + 1 + $attempts;
+            $sequenceNumber = str_pad((string) $newSequence, 3, '0', STR_PAD_LEFT);
             $userId = "{$prefix}{$sequenceNumber}-{$year}";
         }
 
