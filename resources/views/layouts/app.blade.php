@@ -969,6 +969,29 @@ use Illuminate\Support\Facades\Storage;
             }
         }
 
+        .nav-link-faq {
+            color: #495057;
+            text-decoration: none;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link-faq:hover {
+            color: #4e73df;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            text-decoration: none;
+        }
+
+        .nav-link-faq i {
+            font-size: 16px;
+        }
+
     </style>
 
     @stack('styles')
