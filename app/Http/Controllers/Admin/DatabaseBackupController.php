@@ -83,7 +83,7 @@ class DatabaseBackupController extends Controller
             }
 
             // ✅ Verify upload
-            if (!Storage::disk('s3')->exists($result['s3_path'])) {
+            if (!Storage::disk('public')->exists($result['s3_path'])) {
                 throw new \Exception('S3 upload verification failed');
             }
 
@@ -95,7 +95,7 @@ class DatabaseBackupController extends Controller
                 'notes'     => 'Uploaded to S3 successfully',
             ]);
 
-            $temporaryUrl = Storage::disk('s3')->temporaryUrl(
+            $temporaryUrl = Storage::disk('public')->temporaryUrl(
                 $result['s3_path'],
                 now()->addMinutes(15)
             );
@@ -109,7 +109,7 @@ class DatabaseBackupController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Backup completed and uploaded to S3 successfully.',
-                's3' => [
+                'public' => [
                     'bucket' => config('filesystems.disks.s3.bucket'),
                     'region' => config('filesystems.disks.s3.region'),
                     'key'    => $result['s3_path'],
@@ -148,7 +148,7 @@ class DatabaseBackupController extends Controller
             abort(404, 'Backup file path not found in database.');
         }
 
-        if (!Storage::disk('s3')->exists($backup->s3_path)) {
+        if (!Storage::disk('public')->exists($backup->s3_path)) {
             abort(404, 'Backup file not found in S3 storage.');
         }
 
@@ -157,7 +157,7 @@ class DatabaseBackupController extends Controller
             'backup_id' => $backup->id,
         ]);
 
-        return Storage::disk('s3')->download(
+        return Storage::disk('public')->download(
             $backup->s3_path,
             $backup->filename
         );
@@ -185,8 +185,8 @@ class DatabaseBackupController extends Controller
         abort_unless(Auth::user()->isAdmin(), 403);
 
         try {
-            if ($backup->s3_path && Storage::disk('s3')->exists($backup->s3_path)) {
-                Storage::disk('s3')->delete($backup->s3_path);
+            if ($backup->s3_path && Storage::disk('public')->exists($backup->s3_path)) {
+                Storage::disk('public')->delete($backup->s3_path);
             }
 
             $backup->delete();

@@ -98,7 +98,7 @@ class SocialDevelopmentController extends Controller
                     foreach ($photos as $photo) {
                         if ($photo && $photo->isValid()) {
                             // Store each photo in S3
-                            $path = $photo->store('social-activities/cooperative', 's3');
+                            $path = $photo->store('social-activities/cooperative', 'public');
                             $photosPaths[] = $path;
                         }
                     }
@@ -186,7 +186,7 @@ class SocialDevelopmentController extends Controller
                     foreach ($photos as $photo) {
                         if ($photo && $photo->isValid()) {
                             // Store each photo in S3 under community folder
-                            $path = $photo->store('social-activities/community', 's3');
+                            $path = $photo->store('social-activities/community', 'public');
                             $photosPaths[] = $path;
                         }
                     }
@@ -237,7 +237,7 @@ class SocialDevelopmentController extends Controller
             // Delete photos from storage
             if ($activity->photos && is_array($activity->photos)) {
                 foreach ($activity->photos as $photo) {
-                    Storage::disk('s3')->delete($photo);
+                    Storage::disk('public')->delete($photo);
                 }
             }
 
@@ -295,7 +295,7 @@ class SocialDevelopmentController extends Controller
                 // Delete old photos from storage before uploading new ones
                 if ($activity->photos && is_array($activity->photos)) {
                     foreach ($activity->photos as $photo) {
-                        Storage::disk('s3')->delete($photo);
+                        Storage::disk('public')->delete($photo);
                     }
                     Log::info('Deleted old photos:', ['count' => count($activity->photos)]);
                 }
@@ -306,7 +306,7 @@ class SocialDevelopmentController extends Controller
                 foreach ($request->file('photos') as $photo) {
                     if ($photo && $photo->isValid()) {
                         // Store in S3 under dynamic folder based on activity type
-                        $path = $photo->store('social-activities/' . $activity->activity_type, 's3');
+                        $path = $photo->store('social-activities/' . $activity->activity_type, 'public');
                         $photosPaths[] = $path;
                     }
                 }
@@ -450,7 +450,7 @@ class SocialDevelopmentController extends Controller
             return [];
         }
         
-        $disk = Storage::disk('s3');
+        $disk = Storage::disk('public');
         $photos = [];
         
         // For Laravel 10.43+ with concurrent support

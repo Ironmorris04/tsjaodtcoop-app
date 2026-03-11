@@ -137,17 +137,17 @@ class Driver extends Model
 
     public function getPhotoUrlAttribute()
     {
-        return $this->photo ? Storage::disk('s3')->url($this->photo) : null;
+        return $this->photo ? Storage::disk('public')->url($this->photo) : null;
     }
 
     public function getBiodataPhotoUrlAttribute()
     {
-        return $this->biodata_photo ? Storage::disk('s3')->url($this->biodata_photo) : null;
+        return $this->biodata_photo ? Storage::disk('public')->url($this->biodata_photo) : null;
     }
 
     public function getLicensePhotoUrlAttribute()
     {
-        return $this->license_photo ? Storage::disk('s3')->url($this->license_photo) : null;
+        return $this->license_photo ? Storage::disk('public')->url($this->license_photo) : null;
     }
 
     /**

@@ -113,7 +113,7 @@ class SocialActivity extends Model
         }
 
         return array_map(function ($photo) {
-            return Storage::disk('s3')->url($photo);
+            return Storage::disk('public')->url($photo);
         }, $this->photos);
     }
 
@@ -130,7 +130,7 @@ class SocialActivity extends Model
         return array_map(function ($photo) {
             try {
                 // Get file contents from S3
-                $contents = Storage::disk('s3')->get($photo);
+                $contents = Storage::disk('public')->get($photo);
                 
                 // Get mime type
                 $extension = pathinfo($photo, PATHINFO_EXTENSION);

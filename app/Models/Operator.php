@@ -47,13 +47,13 @@ class Operator extends Model
     // URL for original uploaded membership form (PDF or image)
     public function getMembershipFormUrlAttribute()
     {
-        return $this->membership_form_path ? Storage::disk('s3')->url($this->membership_form_path) : null;
+        return $this->membership_form_path ? Storage::disk('public')->url($this->membership_form_path) : null;
     }
 
     // URL for converted PNG preview (first page of PDF)
     public function getMembershipFormPreviewUrlAttribute()
     {
-        return $this->membership_form_preview_path ? Storage::disk('s3')->url($this->membership_form_preview_path) : null;
+        return $this->membership_form_preview_path ? Storage::disk('public')->url($this->membership_form_preview_path) : null;
     }
 
 
@@ -256,11 +256,11 @@ class Operator extends Model
             */
 
             if ($operator->membership_form_path) {
-                Storage::disk('s3')->delete($operator->membership_form_path);
+                Storage::disk('public')->delete($operator->membership_form_path);
             }
 
             if ($operator->membership_form_preview_path) {
-                Storage::disk('s3')->delete($operator->membership_form_preview_path);
+                Storage::disk('public')->delete($operator->membership_form_preview_path);
             }
 
             /*

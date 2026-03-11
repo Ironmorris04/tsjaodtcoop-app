@@ -166,7 +166,7 @@ class DocumentRenewalController extends Controller
             );
 
             if ($renewal->document_photo) {
-                \Storage::disk('s3')->delete($renewal->document_photo);
+                \Storage::disk('public')->delete($renewal->document_photo);
             }
 
             // Send email notification to operator
@@ -225,15 +225,15 @@ class DocumentRenewalController extends Controller
                 if ($renewal->document_photo) {
                     // Delete old license photo if exists
                     if ($driver->license_photo) {
-                        \Storage::disk('s3')->delete($driver->license_photo);
+                        \Storage::disk('public')->delete($driver->license_photo);
                     }
 
                     // Move from pending folder to active folder
                     $oldPath = $renewal->document_photo;
                     $newPath = str_replace('drivers/licenses/pending', 'drivers/licenses', $oldPath);
 
-                    if (\Storage::disk('s3')->exists($oldPath)) {
-                        \Storage::disk('s3')->move($oldPath, $newPath);
+                    if (\Storage::disk('public')->exists($oldPath)) {
+                        \Storage::disk('public')->move($oldPath, $newPath);
                         $updateData['license_photo'] = $newPath;
 
                         $changes['license_photo'] = [

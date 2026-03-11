@@ -108,11 +108,11 @@ class MembershipFormController extends Controller
     {
         $path = 'documents/membership_application_form.pdf';
 
-        if (!Storage::disk('s3')->exists($path)) {
+        if (!Storage::disk('public')->exists($path)) {
             return $this->download(request());
         }
 
-        return Storage::disk('s3')->download(
+        return Storage::disk('public')->download(
             $path,
             'TSJAODTC_Membership_Application_Form.pdf',
             [

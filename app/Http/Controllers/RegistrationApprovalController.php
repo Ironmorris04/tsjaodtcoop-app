@@ -92,7 +92,7 @@ public function approve(Request $request, $id)
         $tempPng = '/tmp/' . $previewFilename;
 
         // Pull PDF from S3
-        file_put_contents($tempPdf, Storage::disk('s3')->get($s3PdfPath));
+        file_put_contents($tempPdf, Storage::disk('public')->get($s3PdfPath));
 
         // Absolute path to Ghostscript binary
         $gs = env('GHOSTSCRIPT_PATH', '/usr/bin/gs');
@@ -123,7 +123,7 @@ public function approve(Request $request, $id)
         if ($code === 0 && file_exists($tempPng)) {
 
             // Push preview to S3 (membership_forms/previews/)
-            Storage::disk('s3')->put(
+            Storage::disk('public')->put(
                 $s3PreviewPath,
                 file_get_contents($tempPng),
                 'public'
@@ -253,11 +253,11 @@ public function approve(Request $request, $id)
 
         // Delete old membership form if exists
         if ($operator->membership_form_path) {
-            Storage::disk('s3')->delete($operator->membership_form_path);
+            Storage::disk('public')->delete($operator->membership_form_path);
         }
 
         // Store the new file
-        $path = $request->file('membership_form')->store('membership_forms', 's3');
+        $path = $request->file('membership_form')->store('membership_forms', 'public');
 
         // Update operator
         $operator->update([
@@ -278,10 +278,10 @@ public function approve(Request $request, $id)
         $path = $operator->membership_form_path;
 
         // Abort if file does not exist on S3
-        abort_if(!Storage::disk('s3')->exists($path), 404);
+        abort_if(!Storage::disk('public')->exists($path), 404);
 
         // Stream the file inline from S3
-        return Storage::disk('s3')->response($path, null, [
+        return Storage::disk('public')->response($path, null, [
             'Content-Disposition' => 'inline',
         ]);
     }
@@ -298,10 +298,10 @@ public function approve(Request $request, $id)
         $path = $operator->membership_form_path;
 
         // Abort if file does not exist in S3
-        abort_if(!Storage::disk('s3')->exists($path), 404);
+        abort_if(!Storage::disk('public')->exists($path), 404);
 
         // Download the file from S3
-        return Storage::disk('s3')->download(
+        return Storage::disk('public')->download(
             $path,
             'MembershipForm.' . pathinfo($path, PATHINFO_EXTENSION)
         );

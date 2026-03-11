@@ -64,7 +64,7 @@ class Requirement extends Model
             return null;
         }
 
-        return Storage::disk('s3')->url($this->file_path);
+        return Storage::disk('public')->url($this->file_path);
     }
 
     /**
@@ -76,7 +76,7 @@ class Requirement extends Model
             return false;
         }
 
-        return Storage::disk('s3')->exists($this->file_path);
+        return Storage::disk('public')->exists($this->file_path);
     }
 
     /**

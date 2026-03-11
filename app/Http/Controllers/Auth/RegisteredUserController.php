@@ -67,11 +67,11 @@ class RegisteredUserController extends Controller
         $profilePhotoPath = null;
 
         if ($request->hasFile('valid_id')) {
-            $validIdPath = $request->file('valid_id')->store('ids', 's3');
+            $validIdPath = $request->file('valid_id')->store('ids', 'public');
         }
 
         if ($request->hasFile('profile_photo')) {
-            $profilePhotoPath = $request->file('profile_photo')->store('profiles', 's3');
+            $profilePhotoPath = $request->file('profile_photo')->store('profiles', 'public');
         }
 
         // Create operator profile with all details

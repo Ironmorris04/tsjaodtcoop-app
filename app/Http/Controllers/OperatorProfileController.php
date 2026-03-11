@@ -197,7 +197,7 @@ class OperatorProfileController extends Controller
                     $filename = 'profile_' . $operator->id . '_' . time() . '.' . $file->getClientOriginalExtension();
 
                     // Upload to S3 under 'operator_photos/'
-                    $path = $file->storeAs('operator_photos', $filename, 's3');
+                    $path = $file->storeAs('operator_photos', $filename, 'public');
 
                     $detailData['profile_photo_path'] = $path;
 
@@ -213,7 +213,7 @@ class OperatorProfileController extends Controller
                     $filename = 'valid_id_' . $operator->id . '_' . time() . '.' . $file->getClientOriginalExtension();
 
                     // Upload to S3 under 'operator_ids/'
-                    $path = $file->storeAs('operator_ids', $filename, 's3');
+                    $path = $file->storeAs('operator_ids', $filename, 'public');
 
                     $detailData['valid_id_path'] = $path;
 

@@ -49,7 +49,7 @@ class RequirementController extends Controller
         $filename = time() . '_' . $validated['type'] . '.' . $file->getClientOriginalExtension();
 
         // Store the file in S3 under 'requirements/' folder
-        $path = $file->storeAs('requirements', $filename, 's3');
+        $path = $file->storeAs('requirements', $filename, 'public');
 
         // Create requirement record
         $requirement = Requirement::create([
@@ -84,7 +84,7 @@ class RequirementController extends Controller
         }
 
         // Check if file exists in S3
-        if (!Storage::disk('s3')->exists($requirement->file_path)) {
+        if (!Storage::disk('public')->exists($requirement->file_path)) {
             abort(404, 'File not found in storage');
         }
 
@@ -143,8 +143,8 @@ class RequirementController extends Controller
     public function destroy(Requirement $requirement)
     {
         // Delete the file
-        if (Storage::disk('s3')->exists($requirement->file_path)) {
-            Storage::disk('s3')->delete($requirement->file_path);
+        if (Storage::disk('public')->exists($requirement->file_path)) {
+            Storage::disk('public')->delete($requirement->file_path);
         }
 
         $requirement->delete();

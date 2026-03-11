@@ -17,12 +17,12 @@ class ImageController extends Controller
         $path = urldecode($path);
 
         // Check if file exists in S3
-        if (!Storage::disk('s3')->exists($path)) {
+        if (!Storage::disk('public')->exists($path)) {
             abort(404, 'Image not found');
         }
 
         // Stream the file from S3
-        return Storage::disk('s3')->response($path, null, [
+        return Storage::disk('public')->response($path, null, [
             'Cache-Control' => 'public, max-age=31536000',
         ]);
     }

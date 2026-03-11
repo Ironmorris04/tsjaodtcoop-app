@@ -1753,7 +1753,7 @@ const MANUAL_BACKUP_LIMIT = 3; // Max manual backups per day
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                storage: 's3'
+                storage: 'public'
             })
         })
         .then(res => res.json())

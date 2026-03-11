@@ -7,7 +7,7 @@ return [
     | Default Filesystem Disk
     |--------------------------------------------------------------------------
     |
-    | The default disk to use. Use 'local' for development and 's3' for
+    | The default disk to use. Use 'local' for development and 'public' for
     | production (e.g., Render). Set in your .env file.
     |
     */
@@ -55,8 +55,8 @@ return [
         ],
 
         // Cloud storage (S3)
-        's3' => [
-            'driver' => 's3',
+        'public' => [
+            'driver' => 'public',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
             'region' => env('AWS_DEFAULT_REGION'),

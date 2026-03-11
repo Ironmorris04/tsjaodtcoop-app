@@ -35,7 +35,7 @@ class OperatorId extends Model
     public function getIdImageUrlAttribute()
     {
         if ($this->id_image_path) {
-            return Storage::disk('s3')->url($this->id_image_path);
+            return Storage::disk('public')->url($this->id_image_path);
         }
         return null;
     }

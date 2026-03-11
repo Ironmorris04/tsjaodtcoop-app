@@ -121,31 +121,31 @@ class UnitController extends Controller
 
             // Handle CR receipt photo upload
             if ($request->hasFile('cr_receipt_photo')) {
-                $path = $request->file('cr_receipt_photo')->store('cr_receipts', 's3');
+                $path = $request->file('cr_receipt_photo')->store('cr_receipts', 'public');
                 $validated['cr_receipt_photo'] = $path;
             }
 
             // Handle CR photo upload
             if ($request->hasFile('cr_photo')) {
-                $path = $request->file('cr_photo')->store('unit_documents/cr_photos', 's3');
+                $path = $request->file('cr_photo')->store('unit_documents/cr_photos', 'public');
                 $validated['cr_photo'] = $path;
             }
 
             // Handle unit photo upload
             if ($request->hasFile('unit_photo')) {
-                $path = $request->file('unit_photo')->store('units/photos', 's3');
+                $path = $request->file('unit_photo')->store('units/photos', 'public');
                 $validated['unit_photo'] = $path;
             }
 
             // Handle business permit photo upload
             if ($request->hasFile('business_permit_photo')) {
-                $path = $request->file('business_permit_photo')->store('unit_documents/business_permits', 's3');
+                $path = $request->file('business_permit_photo')->store('unit_documents/business_permits', 'public');
                 $validated['business_permit_photo'] = $path;
             }
 
             // Handle OR photo upload
             if ($request->hasFile('or_photo')) {
-                $path = $request->file('or_photo')->store('unit_documents/or_photos', 's3');
+                $path = $request->file('or_photo')->store('unit_documents/or_photos', 'public');
                 $validated['or_photo'] = $path;
             }
 
@@ -384,33 +384,33 @@ class UnitController extends Controller
             if ($request->hasFile('unit_photo')) {
                 // Delete old photo if exists
                 if ($unit->unit_photo) {
-                    \Storage::disk('s3')->delete($unit->unit_photo);
+                    \Storage::disk('public')->delete($unit->unit_photo);
                 }
-                $validated['unit_photo'] = $request->file('unit_photo')->store('units/photos', 's3');
+                $validated['unit_photo'] = $request->file('unit_photo')->store('units/photos', 'public');
             }
 
             if ($request->hasFile('business_permit_photo')) {
                 // Delete old photo if exists
                 if ($unit->business_permit_photo) {
-                    \Storage::disk('s3')->delete($unit->business_permit_photo);
+                    \Storage::disk('public')->delete($unit->business_permit_photo);
                 }
-                $validated['business_permit_photo'] = $request->file('business_permit_photo')->store('unit_documents/business_permits', 's3');
+                $validated['business_permit_photo'] = $request->file('business_permit_photo')->store('unit_documents/business_permits', 'public');
             }
 
             if ($request->hasFile('or_photo')) {
                 // Delete old photo if exists
                 if ($unit->or_photo) {
-                    \Storage::disk('s3')->delete($unit->or_photo);
+                    \Storage::disk('public')->delete($unit->or_photo);
                 }
-                $validated['or_photo'] = $request->file('or_photo')->store('unit_documents/or_photos', 's3');
+                $validated['or_photo'] = $request->file('or_photo')->store('unit_documents/or_photos', 'public');
             }
 
             if ($request->hasFile('cr_photo')) {
                 // Delete old photo if exists
                 if ($unit->cr_photo) {
-                    \Storage::disk('s3')->delete($unit->cr_photo);
+                    \Storage::disk('public')->delete($unit->cr_photo);
                 }
-                $validated['cr_photo'] = $request->file('cr_photo')->store('unit_documents/cr_photos', 's3');
+                $validated['cr_photo'] = $request->file('cr_photo')->store('unit_documents/cr_photos', 'public');
             }
 
             // Capture original values before update

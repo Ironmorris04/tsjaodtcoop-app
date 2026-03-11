@@ -192,27 +192,27 @@ class Unit extends Model
     // Accessor for unit photo
     public function getUnitPhotoUrlAttribute()
     {
-        return $this->unit_photo ? Storage::disk('s3')->url($this->unit_photo) : null;
+        return $this->unit_photo ? Storage::disk('public')->url($this->unit_photo) : null;
     }
 
     public function getCrPhotoUrlAttribute()
     {
-        return $this->cr_photo ? Storage::disk('s3')->url($this->cr_photo) : null;
+        return $this->cr_photo ? Storage::disk('public')->url($this->cr_photo) : null;
     }
 
     public function getCrReceiptPhotoUrlAttribute()
     {
-        return $this->cr_receipt_photo ? Storage::disk('s3')->url($this->cr_receipt_photo) : null;
+        return $this->cr_receipt_photo ? Storage::disk('public')->url($this->cr_receipt_photo) : null;
     }
 
     public function getBusinessPermitPhotoUrlAttribute()
     {
-        return $this->business_permit_photo ? Storage::disk('s3')->url($this->business_permit_photo) : null;
+        return $this->business_permit_photo ? Storage::disk('public')->url($this->business_permit_photo) : null;
     }
 
     public function getOrPhotoUrlAttribute()
     {
-        return $this->or_photo ? Storage::disk('s3')->url($this->or_photo) : null;
+        return $this->or_photo ? Storage::disk('public')->url($this->or_photo) : null;
     }
 
     /**

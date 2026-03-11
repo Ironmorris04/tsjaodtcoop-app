@@ -133,15 +133,15 @@ class DriverController extends Controller
 
             // Handle file uploads
             if ($request->hasFile('photo')) {
-                $validated['photo'] = $request->file('photo')->store('drivers/photos', 's3');
+                $validated['photo'] = $request->file('photo')->store('drivers/photos', 'public');
             }
 
             if ($request->hasFile('biodata_photo')) {
-                $validated['biodata_photo'] = $request->file('biodata_photo')->store('drivers/biodata', 's3');
+                $validated['biodata_photo'] = $request->file('biodata_photo')->store('drivers/biodata', 'public');
             }
 
             if ($request->hasFile('license_photo')) {
-                $validated['license_photo'] = $request->file('license_photo')->store('drivers/licenses', 's3');
+                $validated['license_photo'] = $request->file('license_photo')->store('drivers/licenses', 'public');
             }
 
             // Map license_no to license_number
@@ -273,17 +273,17 @@ class DriverController extends Controller
             if ($request->hasFile('photo')) {
                 // Delete old photo if exists
                 if ($driver->photo) {
-                    \Storage::disk('s3')->delete($driver->photo);
+                    \Storage::disk('public')->delete($driver->photo);
                 }
-                $validated['photo'] = $request->file('photo')->store('drivers/photos', 's3');
+                $validated['photo'] = $request->file('photo')->store('drivers/photos', 'public');
             }
 
             if ($request->hasFile('biodata_photo')) {
                 // Delete old biodata photo if exists
                 if ($driver->biodata_photo) {
-                    \Storage::disk('s3')->delete($driver->biodata_photo);
+                    \Storage::disk('public')->delete($driver->biodata_photo);
                 }
-                $validated['biodata_photo'] = $request->file('biodata_photo')->store('drivers/biodata', 's3');
+                $validated['biodata_photo'] = $request->file('biodata_photo')->store('drivers/biodata', 'public');
             }
 
 
@@ -324,7 +324,7 @@ class DriverController extends Controller
 
                 // Store pending renewal data
                 $newLicensePhoto = $request->file('license_photo')
-                    ->store('drivers/licenses/pending', 's3');
+                    ->store('drivers/licenses/pending', 'public');
 
                 // Prevent direct update
                 unset($validated['license_expiry'], $validated['license_photo']);
@@ -333,11 +333,11 @@ class DriverController extends Controller
             // STEP 2: Normal photo update (NO expiry change)
             if (!$licenseExpiryChanged && $isPhotoBeingUpdated) {
                 if ($driver->license_photo) {
-                    \Storage::disk('s3')->delete($driver->license_photo);
+                    \Storage::disk('public')->delete($driver->license_photo);
                 }
 
                 $validated['license_photo'] = $request->file('license_photo')
-                    ->store('drivers/licenses', 's3');
+                    ->store('drivers/licenses', 'public');
             }
 
             // STEP 3: Update driver ONCE

@@ -60,7 +60,7 @@ class DatabaseBackupService
             // Upload to S3
             $s3Path = "db/{$filename}.sql.gz";
 
-            Storage::disk('s3')->put(
+            Storage::disk('public')->put(
                 $s3Path,
                 file_get_contents($gzipPath),
                 ['visibility' => 'private']

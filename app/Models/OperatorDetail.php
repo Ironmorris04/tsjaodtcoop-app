@@ -88,13 +88,13 @@ class OperatorDetail extends Model
     // Helper: Get profile photo URL
     public function getProfilePhotoUrlAttribute()
     {
-        return $this->profile_photo_path ? Storage::disk('s3')->url($this->profile_photo_path) : null;
+        return $this->profile_photo_path ? Storage::disk('public')->url($this->profile_photo_path) : null;
     }
 
     // Helper: Get valid ID URL
     public function getValidIdUrlAttribute()
     {
-        return $this->valid_id_path ? Storage::disk('s3')->url($this->valid_id_path) : null;
+        return $this->valid_id_path ? Storage::disk('public')->url($this->valid_id_path) : null;
     }
 
     // Helper: Get formatted ID type name
