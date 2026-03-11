@@ -57,7 +57,7 @@ class RegistrationApprovalController extends Controller
         return view('admin.registrations.review', compact('operator', 'details', 'dependents'));
     }
 
-    /**
+ /**
  * Approve a registration.
  */
 public function approve(Request $request, $id)
@@ -72,129 +72,57 @@ public function approve(Request $request, $id)
     }
 
     /**
-     * ✅ Generate PNG preview if the uploaded membership form is a PDF
+     * Continue with normal approval process
      */
-    $s3PdfPath = $operator->membership_form_path;
-    $extension = strtolower(pathinfo($s3PdfPath, PATHINFO_EXTENSION));
+    $user = $operator->user;
 
-    if ($extension === 'pdf') {
+    // Generate unique user ID
+    $userId = User::generateUserId('operator');
+    $user->user_id = $userId;
+    $user->save();
 
-        // S3 directories (logical folders)
-        $previewDir = 'membership_forms/previews';
+    // Generate setup token
+    $setupToken = $user->generateSetupToken();
 
-        // Filenames
-        $pdfFilename = pathinfo($s3PdfPath, PATHINFO_FILENAME);
-        $previewFilename = $pdfFilename . '.png';
-        $s3PreviewPath = $previewDir . '/' . $previewFilename;
+    // Update operator approval status
+    $operator->update([
+        'approval_status' => 'approved',
+        'status' => 'active',
+        'approved_at' => now(),
+        'approved_by' => auth()->id(),
+    ]);
 
-        // TEMP paths (required for binary execution, not persistence)
-        $tempPdf = '/tmp/' . basename($s3PdfPath);
-        $tempPng = '/tmp/' . $previewFilename;
+    // Log approval activity
+    Activity::log(
+        'operator_approved',
+        'Operator ' . ($operator->full_name ?? $operator->contact_person) . ' (ID: ' . $userId . ') was approved',
+        auth()->id(),
+        $operator,
+        [
+            'user_id' => $userId,
+            'operator_name' => $operator->full_name ?? $operator->contact_person
+        ]
+    );
 
-        // Pull PDF from S3
-        file_put_contents($tempPdf, Storage::disk('public')->get($s3PdfPath));
+    // Send approval email
+    $setupUrl = route('password.setup', ['token' => $setupToken]);
 
-        // Absolute path to Ghostscript binary
-        $gs = env('GHOSTSCRIPT_PATH', '/usr/bin/gs');
-
-        // Ensure Ghostscript is available
-        if (!is_executable($gs)) {
-            Log::error('Ghostscript not found or not executable', [
-                'path' => $gs,
-                'pdf' => $s3PdfPath,
-            ]);
-
-            @unlink($tempPdf);
-            return redirect()->back()->withErrors([
-                'membership_form' => 'Unable to generate preview (Ghostscript missing).'
-            ]);
-        }
-
-        // Generate first-page PNG safely
-        $cmd = sprintf(
-            '%s -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r150 -dFirstPage=1 -dLastPage=1 -sOutputFile=%s %s',
-            escapeshellarg($gs),
-            escapeshellarg($tempPng),
-            escapeshellarg($tempPdf)
-        );
-
-        exec($cmd, $output, $code);
-
-        if ($code === 0 && file_exists($tempPng)) {
-
-            // Push preview to S3 (membership_forms/previews/)
-            Storage::disk('public')->put(
-                $s3PreviewPath,
-                file_get_contents($tempPng),
-                'public'
-            );
-
-            // Save S3 preview path
-            $operator->membership_form_preview_path = $s3PreviewPath;
-            $operator->save();
-
-        } else {
-            Log::error('Ghostscript conversion failed', [
-                'code' => $code,
-                'output' => $output,
-                'pdf' => $s3PdfPath,
-            ]);
-        }
-
-        // Cleanup (always)
-        @unlink($tempPdf);
-        @unlink($tempPng);
+    try {
+        Mail::send('emails.registration-approved', [
+            'operatorName' => $operator->contact_person,
+            'userId' => $userId,
+            'setupUrl' => $setupUrl,
+        ], function ($message) use ($user) {
+            $message->to($user->email)
+                ->subject('Registration Approved - TSJAODTCooperative System');
+        });
+    } catch (\Exception $e) {
+        \Log::error('Failed to send approval email: ' . $e->getMessage());
     }
 
-        /**
-         * ✅ Continue with the normal approval process
-         */
-        $user = $operator->user;
-
-        // Generate unique user ID
-        $userId = User::generateUserId('operator');
-        $user->user_id = $userId;
-        $user->save();
-
-        // Generate setup token
-        $setupToken = $user->generateSetupToken();
-
-        // Update operator approval status
-        $operator->update([
-            'approval_status' => 'approved',
-            'status' => 'active',
-            'approved_at' => now(),
-            'approved_by' => auth()->id(),
-        ]);
-
-        // Log the approval activity
-        Activity::log(
-            'operator_approved',
-            'Operator ' . ($operator->full_name ?? $operator->contact_person) . ' (ID: ' . $userId . ') was approved',
-            auth()->id(),
-            $operator,
-            ['user_id' => $userId, 'operator_name' => $operator->full_name ?? $operator->contact_person]
-        );
-
-        // Send approval email
-        $setupUrl = route('password.setup', ['token' => $setupToken]);
-
-        try {
-            Mail::send('emails.registration-approved', [
-                'operatorName' => $operator->contact_person,
-                'userId' => $userId,
-                'setupUrl' => $setupUrl,
-            ], function ($message) use ($user) {
-                $message->to($user->email)
-                    ->subject('Registration Approved - TSJAODTCooperative System');
-            });
-        } catch (\Exception $e) {
-            \Log::error('Failed to send approval email: ' . $e->getMessage());
-        }
-
-        return redirect()->route('registrations.index')
-            ->with('success', "Registration approved! User ID: {$userId}. An email has been sent to the operator with password setup instructions.");
-    }
+    return redirect()->route('registrations.index')
+        ->with('success', "Registration approved! User ID: {$userId}. An email has been sent to the operator with password setup instructions.");
+}
 
     /**
      * Reject a registration.
