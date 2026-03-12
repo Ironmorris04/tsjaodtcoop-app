@@ -859,7 +859,7 @@ function viewApplicationForm() {
     }
     
     // Generate S3 URL using Laravel helper
-    const formUrl = '{{ $operator->membership_form_path ? Storage::disk("s3")->url($operator->membership_form_path) : "" }}';
+    const formUrl = '{{ $operator->membership_form_path ? Storage::disk("public")->url($operator->membership_form_path) : "" }}';
     
     if (!formUrl) {
         alert('Unable to load application form');
