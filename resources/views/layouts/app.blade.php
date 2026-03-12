@@ -2047,7 +2047,7 @@ function changePassword(buttonEl, context) {
 
 /* ===============================
    MODAL RESET HANDLERS
-================================ */
+================================ 
 $('#changePasswordModal').on('show.bs.modal', function () {
     document.getElementById('changePasswordForm')?.reset();
     document.querySelectorAll('.text-danger').forEach(el => {
@@ -2060,6 +2060,7 @@ $('#changePasswordModal').on('show.bs.modal', function () {
         icon.classList.add('fa-eye');
     });
 });
+*/
 
 $('#changePasswordModal').on('hidden.bs.modal', function () {
     const form = document.getElementById('changePasswordForm');
