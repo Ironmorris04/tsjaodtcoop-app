@@ -2401,11 +2401,13 @@ function toggleMobileSidebar() {
 <!-- Operator Profile Modal Script -->
 <script>
 $(document).ready(function() {
+
+    let openedChangePasswordFromProfile = false;
+
     // Load profile data when modal is shown
-    $('#operatorProfileModal').on('show.bs.modal', function (e) {
+    $('#operatorProfileModal').on('show.bs.modal', function () {
         var modalContent = $('#operatorProfileContent');
 
-        // Show loading state
         modalContent.html(`
             <div class="text-center py-5">
                 <i class="fas fa-spinner fa-spin fa-3x text-primary"></i>
@@ -2413,7 +2415,6 @@ $(document).ready(function() {
             </div>
         `);
 
-        // Fetch profile data via AJAX
         $.ajax({
             url: '{{ route("operator.profile.view") }}',
             method: 'GET',
@@ -2432,6 +2433,56 @@ $(document).ready(function() {
             }
         });
     });
+
+    // When profile modal closes, clean up backdrop
+    $('#operatorProfileModal').on('hidden.bs.modal', function () {
+        forceCleanModalState();
+    });
+
+    // When change password modal opens, flag it came from profile
+    $('#changePasswordModal').on('show.bs.modal', function () {
+        openedChangePasswordFromProfile = true;
+
+        document.getElementById('changePasswordForm')?.reset();
+        document.querySelectorAll('#changePasswordModal .text-danger').forEach(el => {
+            el.style.display = 'none';
+            el.textContent = '';
+        });
+        document.querySelectorAll('#changePasswordModal .toggle-password-icon').forEach(icon => {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        });
+    });
+
+    // When change password modal closes, reopen profile if it came from there
+    $('#changePasswordModal').on('hidden.bs.modal', function () {
+        const meter = document.getElementById('operatorStrengthMeter');
+        if (meter) meter.classList.remove('active');
+
+        ['operator-req-length', 'operator-req-uppercase', 'operator-req-lowercase',
+         'operator-req-number', 'operator-req-special'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('met');
+        });
+
+        forceCleanModalState();
+
+        if (openedChangePasswordFromProfile) {
+            openedChangePasswordFromProfile = false;
+            setTimeout(function() {
+                $('#operatorProfileModal').modal('show');
+            }, 300);
+        }
+    });
+
+    function forceCleanModalState() {
+        $('.modal-backdrop').remove();
+        if ($('.modal.show').length === 0) {
+            $('body').removeClass('modal-open');
+            $('body').css('padding-right', '');
+        }
+    }
+
 });
 </script>
 @endif
