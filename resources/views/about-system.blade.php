@@ -229,7 +229,7 @@
                 <li><strong>Framework:</strong> Laravel (PHP)</li>
                 <li><strong>Database:</strong> MySQL</li>
                 <li><strong>Frontend:</strong> HTML, CSS, JS, Bootstrap 5</li>
-                <li><strong>Hosting:</strong> Render</li>
+                <li><strong>Hosting:</strong> Laravel Cloud</li>
             </ul>
         </div>
     </div>
